@@ -41,10 +41,9 @@ namespace BlackBerry
         /// <param name="major">The major version the member has been available.</param>
         /// <param name="minor">The minor version the member has been available.</param>
         /// <param name="build">The build version the member has been available.</param>
-        /// <param name="revision">The revision version the member has been available.</param>
-        public AvailableSinceAttribute(int major, int minor, int build = 0, int revision = 0)
+        public AvailableSinceAttribute(int major, int minor, int build = 0)
         {
-            AvailableSince = new Version(major, minor, build, revision);
+            AvailableSince = new Version(major, minor, build);
         }
 
         /// <summary>

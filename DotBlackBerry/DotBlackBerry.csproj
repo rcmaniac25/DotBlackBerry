@@ -44,7 +44,9 @@
   <ItemGroup>
     <Compile Include="AvailableSinceAttribute.cs" />
     <Compile Include="BPS\BPS.cs" />
+    <Compile Include="BPS\BPSEvent.cs" />
     <Compile Include="BPS\BPSHandle.cs" />
+    <Compile Include="BPS\Channel.cs" />
     <Compile Include="BPS\DeviceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />

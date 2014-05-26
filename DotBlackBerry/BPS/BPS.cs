@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace BlackBerry.BPS
 {
@@ -35,7 +36,7 @@ namespace BlackBerry.BPS
     /// BlackBerry Platform Services
     /// </summary>
     [AvailableSince(10, 0)]
-    public class BPS : IDisposable
+    public sealed class BPS : IDisposable
     {
         #region PInvoke
 
@@ -61,7 +62,31 @@ namespace BlackBerry.BPS
         private static extern int bps_register_domain();
 
         [DllImport("bps")]
-        private static extern int bps_register_shutdown_handler(Action<IntPtr> callback, IntPtr data);
+        private static extern int bps_push_event(IntPtr ev);
+
+        [DllImport("bps")]
+        private static extern int bps_register_shutdown_handler(Action<IntPtr> shutdown_handler, IntPtr data);
+
+        [DllImport("bps")]
+        private static extern int bps_register_channel_destroy_handler(Action<IntPtr> destroy_handler, IntPtr data);
+
+        [DllImport("bps")]
+        internal static extern int bps_channel_create(out int chid, int flags);
+
+        [DllImport("bps")]
+        private static extern int bps_channel_get_active();
+
+        [DllImport("bps")]
+        private static extern int bps_channel_set_active(int chid);
+
+        [DllImport("bps")]
+        internal static extern int bps_channel_destroy(int chid);
+
+        [DllImport("bps")]
+        internal static extern int bps_channel_push_event(int chid, IntPtr ev);
+
+        [DllImport("bps")]
+        internal static extern int bps_channel_exec(int chid, Func<IntPtr, int> exec, IntPtr data);
 
         #endregion
 
@@ -81,6 +106,7 @@ namespace BlackBerry.BPS
         /// <summary>
         /// Create an instance of BlackBerry Platform Services.
         /// </summary>
+        [AvailableSince(10, 0)]
         public BPS()
             : this(true)
         {
@@ -104,7 +130,7 @@ namespace BlackBerry.BPS
             disposed = false;
         }
 
-        #region Property
+        #region Properties
 
         /// <summary>
         /// BPS Version
@@ -122,6 +148,31 @@ namespace BlackBerry.BPS
                 var minor = (encodedVersion - majorEncoded) / 1000;
                 var patch = encodedVersion - (majorEncoded + (minor * 1000));
                 return new Version(major, minor, patch);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the active BPS channel.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        public Channel ActiveChannel
+        {
+            [AvailableSince(10, 0)]
+            get
+            {
+                return new Channel(bps_channel_get_active());
+            }
+            [AvailableSince(10, 0)]
+            set
+            {
+                if (value.OwnerThread != Thread.CurrentThread)
+                {
+                    throw new InvalidOperationException("Channel is from a different thread");
+                }
+                if (bps_channel_set_active(value.Handle) == BPS_FAILURE)
+                {
+                    Util.ThrowExceptionForErrno();
+                }
             }
         }
 
@@ -145,6 +196,8 @@ namespace BlackBerry.BPS
         /// <summary>
         /// Shutdown BPS
         /// </summary>
+        /// If Dispose is called more times then BPS was created, then it will exit the program abnormally.
+        [AvailableSince(10, 0)]
         public void Dispose()
         {
             if (!canShutdown)
@@ -154,6 +207,11 @@ namespace BlackBerry.BPS
             if (disposed)
             {
                 throw new ObjectDisposedException("BPS");
+            }
+            if (initBPScount == 0)
+            {
+                //TODO: should log why the program just exited abnormally
+                Environment.Exit(1);
             }
             disposed = true;
             if (initBPScount > 0)
@@ -204,26 +262,6 @@ namespace BlackBerry.BPS
             return bps_register_domain();
         }
 
-        private static void ShutdownHandler(IntPtr data)
-        {
-            var parsedData = Util.DeserializeFromPointer(data);
-            Util.FreeSerializePointer(data);
-            if (parsedData != null)
-            {
-                var parts = parsedData as object[];
-                if (parts != null)
-                {
-                    var callback = parts[0] as Action<object>;
-                    callback(parts[1]);
-                }
-                else
-                {
-                    var callback = parsedData as Action<object>;
-                    callback(null);
-                }
-            }
-        }
-
         /// <summary>
         /// Register a callback that will be invoked when the last shutdown function is called.
         /// </summary>
@@ -239,14 +277,47 @@ namespace BlackBerry.BPS
             {
                 return false;
             }
-            return bps_register_shutdown_handler(ShutdownHandler, data) == BPS_SUCCESS;
+            return bps_register_shutdown_handler(Util.ActionObjFreeHandlerFromAction, data) == BPS_SUCCESS;
         }
 
-        //TODO: BPSChannel CreateChannel(...) //bps_channel_create
+        //TODO add shutdown handler which will cleanup allocated data/pinned data (domain data, fd data, sigevent data)...maybe...
+        //TODO bps_add_fd (SafeHandle, FileStream, SocketStream, "Pipes", mapped memory)
+        //TODO bps_remove_fd
+        //TODO bps_add_sigevent_handler
+        //TODO bps_remove_sigevent_handler
+        //TODO bps_get_domain_data
+        //TODO bps_set_domain_data
 
-        //TODO: bool GetEvent(..., out BPSEvent ev) //bps_get_event
+        /// <summary>
+        /// Register a callback that will be invoked when the active channel is being destroyed.
+        /// </summary>
+        /// <param name="callback">The callback that is invoked on channel destruction.</param>
+        /// <param name="callbackData">The user data that is passed to the callback.</param>
+        /// <returns>true when the handler has successfully been registered along with the data, false if otherwise.</returns>
+        [AvailableSince(10, 0)]
+        public bool RegisterChannelDestroyHandler(Action<object> callback, object callbackData = null)
+        {
+            var toSerialize = callbackData == null ? (object)callback : new object[] { callback, callbackData };
+            var data = Util.SerializeToPointer(toSerialize);
+            if (data == IntPtr.Zero)
+            {
+                return false;
+            }
+            return bps_register_channel_destroy_handler(Util.ActionObjFreeHandlerFromAction, data) == BPS_SUCCESS;
+        }
 
-        //TODO: bool PushEvent(BPSEvent ev) //bps_push_event
+        //TODO bps_get_event //need proper timeout handling, maybe async workflow, make sure BPSEvent is marked as not being able to be disposed
+
+        /// <summary>
+        /// Post an event to the active channel.
+        /// </summary>
+        /// <param name="ev">The event to post to the active channel.</param>
+        /// <returns>true when the event has been posted, false if otherwise.</returns>
+        [AvailableSince(10, 0)]
+        public bool PushEvent(BPSEvent ev)
+        {
+            return bps_push_event(ev.DangerousGetHandle()) == BPS_SUCCESS;
+        }
 
         //XXX should possibly have Equals, HashCode, and ToString. The issue is all BPS instances should be the the same, 
         //but if a BPS instance shouldn't be disposable, then it is not equal and should not be treated as such.

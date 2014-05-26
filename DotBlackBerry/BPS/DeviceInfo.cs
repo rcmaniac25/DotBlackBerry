@@ -7,7 +7,7 @@ namespace BlackBerry.BPS
     /// Device information.
     /// </summary>
     [AvailableSince(10, 0)]
-    public class DeviceInfo : IDisposable
+    public sealed class DeviceInfo : IDisposable
     {
         #region PInvoke
 
@@ -45,6 +45,10 @@ namespace BlackBerry.BPS
         {
             get
             {
+                if (disposed)
+                {
+                    throw new ObjectDisposedException("DeviceInfo");
+                }
                 return new OperatingSystem(PlatformID.Unix, Version.Parse(Marshal.PtrToStringAnsi(deviceinfo_details_get_device_os_version(handle))));
             }
         }

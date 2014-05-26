@@ -28,17 +28,76 @@ namespace BlackBerry
         }
 
         /// <summary>
+        /// Get the current instance of BPS, or throw an exception if it isn't avaliable.
+        /// </summary>
+        /// <returns>Current instance of BPS.</returns>
+        public static BPS.BPS GetBPSOrException()
+        {
+            var bps = BPS.BPS.AvaliableInstance;
+            if (bps == null)
+            {
+                throw new InvalidOperationException("BPS has not been started");
+            }
+            return bps;
+        }
+
+        private static void ActionObjHandler(IntPtr ptr, bool free)
+        {
+            var parsedData = DeserializeFromPointer(ptr);
+            if (free)
+            {
+                FreeSerializePointer(ptr);
+            }
+            if (parsedData != null)
+            {
+                var parts = parsedData as object[];
+                if (parts != null)
+                {
+                    var callback = parts[0] as Action<object>;
+                    callback(parts[1]);
+                }
+                else
+                {
+                    var callback = parsedData as Action<object>;
+                    callback(null);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parse argument data to Action&lt;object&gt; and then free the pointer.
+        /// </summary>
+        /// <param name="ptr">The data pointer to parse.</param>
+        public static void ActionObjFreeHandlerFromAction(IntPtr ptr)
+        {
+            ActionObjHandler(ptr, true);
+        }
+
+        /// <summary>
+        /// Parse argument data to Action&lt;object&gt; and then free the pointer.
+        /// </summary>
+        /// <param name="ptr">The data pointer to parse.</param>
+        /// <returns>zero</returns>
+        public static int ActionObjFreeHandlerFromFuncZeroReturn(IntPtr ptr)
+        {
+            ActionObjHandler(ptr, true);
+            return 0;
+        }
+
+        /// <summary>
         /// Serialize an object to a pointer.
         /// </summary>
         /// <param name="obj">The object to serialize.</param>
+        /// <param name="type">What type of handle handle should be created.</param>
         /// <returns>The data, or IntPtr.Zero if obj is null or an error occurs.</returns>
-        public static IntPtr SerializeToPointer(object obj)
+        public static IntPtr SerializeToPointer(object obj, GCHandleType type = GCHandleType.Normal)
         {
             if (obj == null)
             {
                 return IntPtr.Zero;
             }
 
+#if BLACKBERRY_USE_SERIALIZATION
             // Serialize
             var formatter = new BinaryFormatter();
             var ms = new MemoryStream();
@@ -63,6 +122,9 @@ namespace BlackBerry
             Marshal.WriteInt32(ptr, (int)ms.Length);
             Marshal.Copy(data, 0, ptr, (int)ms.Length);
             return ptr;
+#else
+            return GCHandle.ToIntPtr(GCHandle.Alloc(obj, type));
+#endif
         }
 
         /// <summary>
@@ -77,6 +139,7 @@ namespace BlackBerry
                 return null;
             }
 
+#if BLACKBERRY_USE_SERIALIZATION
             // Get data
             var dataLength = Marshal.ReadInt32(ptr);
             var data = new byte[dataLength + sizeof(int)];
@@ -93,6 +156,9 @@ namespace BlackBerry
             {
                 return null;
             }
+#else
+            return GCHandle.FromIntPtr(ptr).Target;
+#endif
         }
 
         /// <summary>
@@ -101,7 +167,11 @@ namespace BlackBerry
         /// <param name="ptr">The pointer to free.</param>
         public static void FreeSerializePointer(IntPtr ptr)
         {
+#if BLACKBERRY_USE_SERIALIZATION
             Syscall.free(ptr);
+#else
+            GCHandle.FromIntPtr(ptr).Free();
+#endif
         }
     }
 }

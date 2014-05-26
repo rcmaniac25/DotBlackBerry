@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 
 namespace BlackBerry.BPS
 {
     /// <summary>
     /// Handle to a BPS allocation.
     /// </summary>
-    public sealed class BPSHandle : CriticalHandle
+    [AvailableSince(10, 0)]
+    public abstract class BPSHandle : CriticalHandleZeroOrMinusOneIsInvalid
     {
         internal BPSHandle(IntPtr ptr)
-            : base(IntPtr.Zero)
         {
-            handle = ptr;
+            SetHandle(ptr);
         }
 
-        internal IntPtr UnsafeHandle
+        internal IntPtr Handle
         {
             get
             {
@@ -23,20 +23,10 @@ namespace BlackBerry.BPS
         }
 
         /// <summary>
-        /// Gets a value indicating whether the handle value is invalid.
-        /// </summary>
-        public override bool IsInvalid
-        {
-            get
-            {
-                return handle == IntPtr.Zero;
-            }
-        }
-
-        /// <summary>
         /// Executes the code required to free the handle.
         /// </summary>
         /// <returns>true if the handle is released successfully; otherwise, in the event of a catastrophic failure, false.</returns>
+        [AvailableSince(10, 0)]
         protected override bool ReleaseHandle()
         {
             BPS.bps_free(handle);
