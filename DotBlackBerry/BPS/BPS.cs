@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BlackBerry.BPS
 {
@@ -30,6 +33,29 @@ namespace BlackBerry.BPS
         /// </summary>
         [AvailableSince(10, 0)]
         Debug = 3
+    }
+
+    /// <summary>
+    /// The bit to use when adding a file descriptor.
+    /// </summary>
+    [Flags, AvailableSince(10, 0)]
+    public enum BPSIO : int
+    {
+        /// <summary>
+        /// Indicate that there is data available for reading.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Input = 1 << 0,
+        /// <summary>
+        /// Indicate that there is room in the output buffer for more data.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Output = 1 << 1,
+        /// <summary>
+        /// An error occured, the device disconnected, or the file descriptor was invalid.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Except = 1 << 2
     }
 
     /// <summary>
@@ -88,6 +114,21 @@ namespace BlackBerry.BPS
         [DllImport("bps")]
         internal static extern int bps_channel_exec(int chid, Func<IntPtr, int> exec, IntPtr data);
 
+        [DllImport("bps")]
+        private static extern IntPtr bps_get_domain_data(int domain_id);
+
+        [DllImport("bps")]
+        private static extern int bps_set_domain_data(int domain_id, IntPtr new_data, out IntPtr old_data);
+
+        [DllImport("bps")]
+        private static extern int bps_add_fd(int fd, int io_events, Func<int, int, IntPtr, int> io_handler, IntPtr data);
+
+        [DllImport("bps")]
+        private static extern int bps_remove_fd(int fd);
+
+        [DllImport("bps")]
+        private static extern int bps_get_event(out IntPtr ev, int timeout_ms);
+
         #endregion
 
         #region Consts
@@ -99,6 +140,8 @@ namespace BlackBerry.BPS
 
         private static BPS initBPS = null;
         private static int initBPScount = 0;
+        private static ConcurrentSet<IntPtr> allocatedPointers = new ConcurrentSet<IntPtr>();
+        private static IDictionary<IntPtr, IntPtr> fdToPointer = new ConcurrentDictionary<IntPtr, IntPtr>();
 
         private bool canShutdown;
         private bool disposed;
@@ -123,6 +166,7 @@ namespace BlackBerry.BPS
                 }
                 if ((initBPScount++) == 1)
                 {
+                    bps_register_channel_destroy_handler(CleanupPointers, IntPtr.Zero);
                     initBPS = this;
                 }
             }
@@ -160,11 +204,19 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
+                if (disposed)
+                {
+                    throw new ObjectDisposedException("BPS");
+                }
                 return new Channel(bps_channel_get_active());
             }
             [AvailableSince(10, 0)]
             set
             {
+                if (disposed)
+                {
+                    throw new ObjectDisposedException("BPS");
+                }
                 if (value.OwnerThread != Thread.CurrentThread)
                 {
                     throw new InvalidOperationException("Channel is from a different thread");
@@ -217,12 +269,31 @@ namespace BlackBerry.BPS
             if (initBPScount > 0)
             {
                 initBPScount--;
-                bps_shutdown();
                 if (initBPScount == 0)
                 {
                     initBPS = null;
                 }
+                bps_shutdown();
             }
+        }
+
+        private static void CleanupPointers(IntPtr ignore)
+        {
+            var oldData = allocatedPointers.ToArray();
+            allocatedPointers.Clear();
+            foreach (var ptr in oldData)
+            {
+                try
+                {
+                    Util.FreeSerializePointer(ptr);
+                }
+                catch
+                {
+                    //TODO big error...
+                }
+            }
+
+            fdToPointer.Clear();
         }
 
         #region Functions
@@ -236,6 +307,10 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 1)]
         public bool InitializeLogging()
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
             return bps_logging_init() == BPS_SUCCESS;
         }
 
@@ -249,6 +324,10 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public void SetLoggingVerbosity(BPSVerbosity verbosity)
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
             bps_set_verbosity((uint)verbosity);
         }
 
@@ -259,6 +338,10 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public int RegisterDomain()
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
             return bps_register_domain();
         }
 
@@ -271,6 +354,10 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public bool RegisterShutdownHandler(Action<object> callback, object callbackData = null)
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
             var toSerialize = callbackData == null ? (object)callback : new object[] { callback, callbackData };
             var data = Util.SerializeToPointer(toSerialize);
             if (data == IntPtr.Zero)
@@ -280,23 +367,187 @@ namespace BlackBerry.BPS
             return bps_register_shutdown_handler(Util.ActionObjFreeHandlerFromAction, data) == BPS_SUCCESS;
         }
 
-        //TODO add shutdown handler which will cleanup allocated data/pinned data (domain data, fd data, sigevent data)...maybe...
-        //TODO bps_add_fd (SafeHandle, FileStream, SocketStream, "Pipes", mapped memory)
-        //TODO bps_remove_fd
+        #region Add/Remove File Descriptor
+
+        private int HandleFileDescriptor(int fd, int ioe, IntPtr ptr)
+        {
+            var parsedData = Util.DeserializeFromPointer(ptr) as object[];
+            IntPtr key;
+            if (parsedData != null)
+            {
+                var sender = parsedData[0];
+                var handler = parsedData[1] as Func<object, BPSIO, object, bool>;
+                var data = parsedData.Length > 2 ? parsedData[2] : null;
+                var continueExec = true;
+                try
+                {
+                    continueExec = handler(sender, (BPSIO)ioe, data);
+                }
+                catch
+                {
+                    //TODO: log error
+                    continueExec = false;
+                }
+                if (continueExec)
+                {
+                    return BPS_SUCCESS;
+                }
+            }
+            if (fdToPointer.ManuallyFindKey(ptr, out key))
+            {
+                fdToPointer.Remove(key);
+            }
+            allocatedPointers.Remove(ptr);
+            Util.FreeSerializePointer(ptr);
+            return BPS_FAILURE;
+        }
+
+        internal bool AddFileDescriptor<T>(SafeHandle handle, T sender, BPSIO ioEvents, Func<T, BPSIO, object, bool> ioHandler, object callbackData)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
+            // Could probably just pass sender directly into the ioHandler instead of routing it through the HandleFileDescriptor function
+            var genericCallback = new Func<object, BPSIO, object, bool>((s, e, d) => ioHandler((T)s, e, d));
+            var toSerialize = callbackData == null ? new object[] { sender, genericCallback } : new object[] { sender, genericCallback, callbackData };
+            var data = Util.SerializeToPointer(toSerialize);
+            if (data == IntPtr.Zero)
+            {
+                return false;
+            }
+            var fd = handle.DangerousGetHandle();
+            var success = bps_add_fd(fd.ToInt32(), (int)ioEvents, HandleFileDescriptor, data) == BPS_SUCCESS;
+            if (success)
+            {
+                fdToPointer.Add(fd, data);
+                allocatedPointers.Add(data);
+            }
+            else
+            {
+                Util.FreeSerializePointer(data);
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Add a file descriptor to the currently active channel.
+        /// </summary>
+        /// <param name="handle">The file descriptor to start monitoring.</param>
+        /// <param name="ioEvents">The I/O conditions to monitor for.</param>
+        /// <param name="ioHandler">The I/O callback that is called whenever I/O conditions are met.</param>
+        /// <param name="data">User supplied data that will be given to the I/O callback as the third argument.</param>
+        /// <returns>true if the file descriptor was successfully added to the channel, false if otherwise.</returns>
+        [AvailableSince(10, 0)]
+        public bool AddFileDescriptor(SafeHandle handle, BPSIO ioEvents, Func<SafeHandle, BPSIO, object, bool> ioHandler, object data = null)
+        {
+            return AddFileDescriptor(handle, handle, ioEvents, ioHandler, data);
+        }
+
+        /// <summary>
+        /// Remove a file descriptor from the active channel.
+        /// </summary>
+        /// <param name="handle">The file descriptor to remove.</param>
+        /// <returns>true if the file descriptor was successfully removed from the channel, false if otherwise.</returns>
+        [AvailableSince(10, 0)]
+        public bool RemoveFileDescriptor(SafeHandle handle)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
+            if (handle.IsInvalid)
+            {
+                throw new ArgumentException("Handle is invalid");
+            }
+            var pointer = handle.DangerousGetHandle();
+            var success = bps_remove_fd(pointer.ToInt32()) == BPS_SUCCESS;
+            if (fdToPointer.ContainsKey(pointer) && success)
+            {
+                var dataPtr = fdToPointer[pointer];
+                fdToPointer.Remove(pointer);
+                allocatedPointers.Remove(dataPtr);
+                Util.FreeSerializePointer(dataPtr);
+            }
+            return success;
+        }
+
+        #endregion
+
+        #region Add/Remove sigevent
+
         //TODO bps_add_sigevent_handler
         //TODO bps_remove_sigevent_handler
-        //TODO bps_get_domain_data
-        //TODO bps_set_domain_data
+
+        #endregion
+
+        #region Get/Set Domain Data
+
+        /// <summary>
+        /// Retrieve domain-specific data from the active channel.
+        /// </summary>
+        /// <param name="domain">Domain ID</param>
+        /// <returns>The user data that was associated with the active channel and the <paramref name="domain"/>. If no data is found, a <c>null</c> value is returned.</returns>
+        [AvailableSince(10, 0)]
+        public object GetDomainData(int domain)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
+            return Util.DeserializeFromPointer(bps_get_domain_data(domain));
+        }
+
+        /// <summary>
+        /// Set domain specific data for the active channel.
+        /// </summary>
+        /// <param name="domain">Domain ID</param>
+        /// <param name="data">The service user data that should be stored in the active channel.</param>
+        /// <returns>true if the data was set, false if otherwise.</returns>
+        [AvailableSince(10, 0)]
+        public bool SetDomainData(int domain, object data)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
+            var o = IntPtr.Zero;
+            var n = Util.SerializeToPointer(data);
+            if (n != IntPtr.Zero)
+            {
+                allocatedPointers.Add(n);
+            }
+            var success = bps_set_domain_data(domain, n, out o) == BPS_SUCCESS;
+            if (success && o != IntPtr.Zero)
+            {
+                if (allocatedPointers.Remove(o))
+                {
+                    Util.FreeSerializePointer(o);
+                }
+            }
+            if (!success && n != IntPtr.Zero)
+            {
+                allocatedPointers.Remove(n);
+                Util.FreeSerializePointer(n);
+            }
+            return success;
+        }
+
+        #endregion
 
         /// <summary>
         /// Register a callback that will be invoked when the active channel is being destroyed.
         /// </summary>
         /// <param name="callback">The callback that is invoked on channel destruction.</param>
-        /// <param name="callbackData">The user data that is passed to the callback.</param>
+        /// <param name="callbackData">The user data that is passed to the <paramref name="callback"/>.</param>
         /// <returns>true when the handler has successfully been registered along with the data, false if otherwise.</returns>
         [AvailableSince(10, 0)]
         public bool RegisterChannelDestroyHandler(Action<object> callback, object callbackData = null)
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
             var toSerialize = callbackData == null ? (object)callback : new object[] { callback, callbackData };
             var data = Util.SerializeToPointer(toSerialize);
             if (data == IntPtr.Zero)
@@ -306,7 +557,69 @@ namespace BlackBerry.BPS
             return bps_register_channel_destroy_handler(Util.ActionObjFreeHandlerFromAction, data) == BPS_SUCCESS;
         }
 
-        //TODO bps_get_event //need proper timeout handling, maybe async workflow, make sure BPSEvent is marked as not being able to be disposed
+        #region GetEvent
+
+        /// <summary>
+        /// Retrieve the next event from the application's active channel.
+        /// </summary>
+        /// <returns>A BPSEvent.</returns>
+        [AvailableSince(10, 0)]
+        public BPSEvent GetEvent()
+        {
+            return GetEvent(Timeout.InfiniteTimeSpan);
+        }
+
+        /// <summary>
+        /// Retrieve the next event from the application's active channel.
+        /// </summary>
+        /// <param name="timeout">The timeout for getting the event. If timeout occurs, a TimeoutException is thrown.</param>
+        /// <returns>A BPSEvent.</returns>
+        [AvailableSince(10, 0)]
+        public BPSEvent GetEvent(TimeSpan timeout)
+        {
+            return GetEventAsync(timeout).Result;
+        }
+
+        /// <summary>
+        /// Retrieve the next event from the application's active channel.
+        /// </summary>
+        /// <returns>An async BPSEvent task.</returns>
+        [AvailableSince(10, 0)]
+        public async Task<BPSEvent> GetEventAsync()
+        {
+            return await GetEventAsync(Timeout.InfiniteTimeSpan);
+        }
+
+        /// <summary>
+        /// Retrieve the next event from the application's active channel.
+        /// </summary>
+        /// <param name="timeout">The timeout for getting the event. If timeout occurs, a TimeoutException is thrown.</param>
+        /// <returns>An async BPSEvent task.</returns>
+        [AvailableSince(10, 0)]
+        public async Task<BPSEvent> GetEventAsync(TimeSpan timeout)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
+            return await Task.Factory.StartNew(t => GetEventBlocking((TimeSpan)t), timeout);
+        }
+
+        private BPSEvent GetEventBlocking(TimeSpan timeout)
+        {
+            IntPtr ev;
+            if (bps_get_event(out ev, timeout == Timeout.InfiniteTimeSpan ? -1 : (int)timeout.TotalMilliseconds) != BPS_SUCCESS)
+            {
+                Util.ThrowExceptionForErrno();
+            }
+            if (ev == IntPtr.Zero && timeout != Timeout.InfiniteTimeSpan)
+            {
+                throw new TimeoutException();
+            }
+            return new BPSEvent(ev, false);
+        }
+
+        #endregion
 
         /// <summary>
         /// Post an event to the active channel.
@@ -316,6 +629,10 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public bool PushEvent(BPSEvent ev)
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
             return bps_push_event(ev.DangerousGetHandle()) == BPS_SUCCESS;
         }
 

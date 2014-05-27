@@ -31,15 +31,17 @@ namespace BlackBerry
         /// Get the current instance of BPS, or throw an exception if it isn't avaliable.
         /// </summary>
         /// <returns>Current instance of BPS.</returns>
-        public static BPS.BPS GetBPSOrException()
+        public static BlackBerry.BPS.BPS GetBPSOrException()
         {
-            var bps = BPS.BPS.AvaliableInstance;
+            var bps = BlackBerry.BPS.BPS.AvaliableInstance;
             if (bps == null)
             {
                 throw new InvalidOperationException("BPS has not been started");
             }
             return bps;
         }
+
+        #region Callbacks
 
         private static void ActionObjHandler(IntPtr ptr, bool free)
         {
@@ -51,15 +53,22 @@ namespace BlackBerry
             if (parsedData != null)
             {
                 var parts = parsedData as object[];
-                if (parts != null)
+                try
                 {
-                    var callback = parts[0] as Action<object>;
-                    callback(parts[1]);
+                    if (parts != null)
+                    {
+                        var callback = parts[0] as Action<object>;
+                        callback(parts[1]);
+                    }
+                    else
+                    {
+                        var callback = parsedData as Action<object>;
+                        callback(null);
+                    }
                 }
-                else
+                catch
                 {
-                    var callback = parsedData as Action<object>;
-                    callback(null);
+                    //TODO: log error
                 }
             }
         }
@@ -83,6 +92,10 @@ namespace BlackBerry
             ActionObjHandler(ptr, true);
             return 0;
         }
+
+        #endregion
+
+        #region Serialize .Net Objects
 
         /// <summary>
         /// Serialize an object to a pointer.
@@ -173,5 +186,7 @@ namespace BlackBerry
             GCHandle.FromIntPtr(ptr).Free();
 #endif
         }
+
+        #endregion
     }
 }

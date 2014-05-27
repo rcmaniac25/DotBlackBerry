@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+
 using Microsoft.Win32.SafeHandles;
 
 namespace BlackBerry.BPS
@@ -29,8 +31,11 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         protected override bool ReleaseHandle()
         {
-            BPS.bps_free(handle);
-            handle = IntPtr.Zero;
+            IntPtr hwnd;
+            if ((hwnd = Interlocked.Exchange(ref handle, IntPtr.Zero)) != IntPtr.Zero)
+            {
+                BPS.bps_free(hwnd);
+            }
             return true;
         }
     }
