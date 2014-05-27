@@ -180,6 +180,10 @@ namespace BlackBerry
         /// <param name="ptr">The pointer to free.</param>
         public static void FreeSerializePointer(IntPtr ptr)
         {
+            if (ptr == IntPtr.Zero)
+            {
+                return;
+            }
 #if BLACKBERRY_USE_SERIALIZATION
             Syscall.free(ptr);
 #else

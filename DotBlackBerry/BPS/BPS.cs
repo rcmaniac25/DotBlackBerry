@@ -316,6 +316,24 @@ namespace BlackBerry.BPS
 
 #endif
 
+        internal bool RegisterSerializedPointer(IntPtr ptr)
+        {
+            if (ptr != IntPtr.Zero)
+            {
+                return allocatedPointers.Add(ptr);
+            }
+            return true;
+        }
+
+        internal bool UnregisterSerializedPointer(IntPtr ptr)
+        {
+            if (ptr != IntPtr.Zero)
+            {
+                return allocatedPointers.Remove(ptr);
+            }
+            return true;
+        }
+
         /// <summary>
         /// Set the verbosity of logging for platform services.
         /// </summary>
