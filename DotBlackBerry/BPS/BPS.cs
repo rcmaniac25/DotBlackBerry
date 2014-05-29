@@ -182,6 +182,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public static Version Version
         {
+            [AvailableSince(10, 0)]
             get
             {
                 // The version number is computed as follows:

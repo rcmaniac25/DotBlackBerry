@@ -62,6 +62,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public int PIN
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (disposed)
@@ -79,6 +80,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string PINString
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -96,6 +98,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public long SerialNumber
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (disposed)
@@ -113,6 +116,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string SerialNumberString
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -130,6 +134,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string IMEI
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -147,6 +152,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string MEID
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)

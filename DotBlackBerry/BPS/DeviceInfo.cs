@@ -129,6 +129,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public OperatingSystem OSVersion
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (disposed)
@@ -146,6 +147,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public string HardwareID
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (disposed)
@@ -163,6 +165,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string DeviceName
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -180,6 +183,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string ModelName
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -197,6 +201,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string ModelNumber
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -214,6 +219,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public string DeviceOS
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (disposed)
@@ -231,6 +237,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string ProcessorName
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -248,6 +255,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public int ProcessorCoreCount
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)
@@ -265,6 +273,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public bool IsSimulator
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (disposed)
@@ -282,6 +291,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 1)]
         public PhysicalKeyboardExistence PhysicalKeyboard
         {
+            [AvailableSince(10, 1)]
             get
             {
                 if (disposed)
@@ -299,6 +309,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public HDMIConnector HDMIConnector
         {
+            [AvailableSince(10, 2)]
             get
             {
                 if (disposed)

@@ -255,6 +255,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public uint Code
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (handle == IntPtr.Zero)
@@ -271,6 +272,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public int Domain
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (handle == IntPtr.Zero)
@@ -287,6 +289,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public BPSEventPayload Payload
         {
+            [AvailableSince(10, 0)]
             get
             {
                 if (handle == IntPtr.Zero)
