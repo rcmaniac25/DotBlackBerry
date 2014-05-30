@@ -49,10 +49,14 @@
     <Compile Include="BPS\BPSEvent.cs" />
     <Compile Include="BPS\BPSExtensions.cs" />
     <Compile Include="BPS\BPSHandle.cs" />
+    <Compile Include="BPS\ButtonEvent.cs" />
     <Compile Include="BPS\Channel.cs" />
     <Compile Include="BPS\DeviceIdentifyingInfo.cs" />
     <Compile Include="BPS\DeviceInfo.cs" />
+    <Compile Include="BPS\Dialog\AlertDialog.cs" />
+    <Compile Include="BPS\Dialog\ContextMenu.cs" />
     <Compile Include="BPS\Dialog\Dialog.cs" />
+    <Compile Include="BPS\Holster.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

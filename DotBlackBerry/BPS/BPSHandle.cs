@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 using Microsoft.Win32.SafeHandles;
 
@@ -37,6 +38,35 @@ namespace BlackBerry.BPS
                 BPS.bps_free(hwnd);
             }
             return true;
+        }
+    }
+
+    /// <summary>
+    /// A string allocated by BPS.
+    /// </summary>
+    [AvailableSince(10, 0)]
+    public sealed class BPSString : BPSHandle
+    {
+        internal BPSString(IntPtr ptr)
+            : base(ptr)
+        {
+            Value = Marshal.PtrToStringAnsi(ptr);
+        }
+
+        /// <summary>
+        /// Get the value of the BPS string.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        public string Value { get; private set; }
+
+        /// <summary>
+        /// Convert a BPSString into a string.
+        /// </summary>
+        /// <param name="bpsString">The BPSString to convert.</param>
+        /// <returns>The string contents.</returns>
+        public static implicit operator string(BPSString bpsString)
+        {
+            return bpsString.Value;
         }
     }
 }

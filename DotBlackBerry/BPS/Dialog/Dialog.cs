@@ -288,7 +288,10 @@ namespace BlackBerry.BPS.Dialog
 
         internal abstract void CreateDialog();
 
-        internal abstract DialogEvent GetEventForDialog(IntPtr ev);
+        internal virtual DialogEvent GetEventForDialog(IntPtr ev)
+        {
+            return new GenericDialogEvent(ev, this);
+        }
 
         /// <summary>
         /// Dispose of the Dialog.
@@ -904,11 +907,6 @@ namespace BlackBerry.BPS.Dialog
         internal override void CreateDialog()
         {
             throw new NotImplementedException();
-        }
-
-        internal override DialogEvent GetEventForDialog(IntPtr ev)
-        {
-            return new GenericDialogEvent(ev, this);
         }
     }
 
