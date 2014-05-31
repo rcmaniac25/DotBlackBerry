@@ -56,7 +56,6 @@
     <Compile Include="BPS\Dialog\AlertDialog.cs" />
     <Compile Include="BPS\Dialog\ContextMenu.cs" />
     <Compile Include="BPS\Dialog\Dialog.cs" />
-    <Compile Include="BPS\Holster.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
