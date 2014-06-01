@@ -517,7 +517,7 @@ namespace BlackBerry.BPS.Dialog
             set
             {
                 Util.GetBPSOrException();
-                if (dialog_set_enter_key_type(handle, (int)value) == BPS.BPS_SUCCESS)
+                if (dialog_set_enter_key_type(handle, VirtualKeyboard.EnterKeyToInt(value)) == BPS.BPS_SUCCESS)
                 {
                     UpdateDialog();
                 }
@@ -859,7 +859,10 @@ namespace BlackBerry.BPS.Dialog
         internal DialogEvent(IntPtr ev, Dialog dia)
             : base(ev, false)
         {
+            Util.GetBPSOrException();
             Dialog = dia;
+            Error = Marshal.PtrToStringAnsi(Dialog.dialog_event_get_error(DangerousGetHandle()));
+            SelectedButton = dia.Buttons[Dialog.dialog_event_get_selected_index(DangerousGetHandle())];
         }
 
         /// <summary>
@@ -872,29 +875,13 @@ namespace BlackBerry.BPS.Dialog
         /// Get the error message, if there is one, for the event.
         /// </summary>
         [AvailableSince(10, 0)]
-        public string Error
-        {
-            [AvailableSince(10, 0)]
-            get
-            {
-                Util.GetBPSOrException();
-                return Marshal.PtrToStringAnsi(Dialog.dialog_event_get_error(DangerousGetHandle()));
-            }
-        }
+        public string Error { [AvailableSince(10, 0)]get; private set; }
 
         /// <summary>
         /// Get the selected button from the dialog.
         /// </summary>
         [AvailableSince(10, 0)]
-        public DialogButton SelectedButton
-        {
-            [AvailableSince(10, 0)]
-            get
-            {
-                Util.GetBPSOrException();
-                return Dialog.Buttons[Dialog.dialog_event_get_selected_index(DangerousGetHandle())];
-            }
-        }
+        public DialogButton SelectedButton { [AvailableSince(10, 0)]get; private set; }
     }
 
     internal class GenericDialog : Dialog
