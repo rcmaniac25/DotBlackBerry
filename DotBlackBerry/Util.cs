@@ -13,19 +13,121 @@ namespace BlackBerry
     /// </summary>
     internal class Util
     {
+        #region Versioning
+
+        //While it would be nice to have something like "IsOS10_2", "IsOS_10_2_1", etc., it would result in needing to set them up statically and init/shutdown of BPS and other processes. Just do it at runtime and cache it.
+
         /// <summary>
-        /// Get the current errno and throw an exception for it
+        /// Determine if something is able to run with the specified version.
         /// </summary>
-        public static void ThrowExceptionForErrno()
+        /// <param name="major">The major version that needs to exist.</param>
+        /// <param name="minor">The minor version that needs to exist.</param>
+        /// <returns>true if it can run, false if otherwise.</returns>
+        public static bool IsCapableOfRunning(int major, int minor = 0)
         {
-            var errno = Stdlib.GetLastError();
+            return IsCapableOfRunning(new Version(major, minor));
+        }
+
+        /// <summary>
+        /// Determine if something is able to run with the specified version.
+        /// </summary>
+        /// <param name="requiredVersion">The version that is required.</param>
+        /// <returns>true if it can run, false if otherwise.</returns>
+        public static bool IsCapableOfRunning(Version requiredVersion)
+        {
+            return BlackBerry.BPS.DeviceInfo.OSVersion.Version >= requiredVersion;
+        }
+
+        /// <summary>
+        /// Throw an exception if the OS does not meet the required version for the member to execute.
+        /// </summary>
+        /// <param name="info">The member that wants to be used.</param>
+        /// <param name="message">Any message to state about the exception.</param>
+        public static void ThrowIfUnsupported(System.Reflection.MemberInfo info, string message = null)
+        {
+            ThrowIfUnsupported(AvailableSinceAttribute.GetRequiredVersion(info), message);
+        }
+
+        /// <summary>
+        /// Throw an exception if the OS does not meet the required version for the member to execute.
+        /// </summary>
+        /// <param name="major">The major version that needs to exist.</param>
+        /// <param name="minor">The minor version that needs to exist.</param>
+        /// <param name="message">Any message to state about the exception.</param>
+        public static void ThrowIfUnsupported(int major, int minor = 0, string message = null)
+        {
+            ThrowIfUnsupported(new Version(major, minor), message);
+        }
+
+        /// <summary>
+        /// Throw an exception if the OS does not meet the required version for execution.
+        /// </summary>
+        /// <param name="requiredVersion">Required version for execution.</param>
+        /// <param name="message">Any message to state about the exception.</param>
+        public static void ThrowIfUnsupported(Version requiredVersion, string message = null)
+        {
+            if (!IsCapableOfRunning(requiredVersion))
+            {
+                ThrowUnsupported(requiredVersion, message);
+            }
+        }
+
+        private static void ThrowUnsupported(Version requiredVersion, string message = null)
+        {
+            var format = string.IsNullOrWhiteSpace(message) ? "Requires OS version {1}" : "{0}, Requires OS version {1}";
+            throw new NotSupportedException(string.Format(format, message, requiredVersion));
+        }
+
+        #endregion
+
+        #region Errno
+
+        /// <summary>
+        /// Get the last errno and throw an exception for it.
+        /// </summary>
+        public static void ThrowExceptionForLastErrno()
+        {
+            ThrowExceptionForErrno(Stdlib.GetLastError());
+        }
+
+        /// <summary>
+        /// Throw an exception for the errno.
+        /// </summary>
+        /// <param name="errno">The errno to throw an exception for.</param>
+        /// <param name="logNoError">If there is no error, log that this was called (meaning a failure occured) but that no error existed.</param>
+        public static void ThrowExceptionForErrno(Errno errno, bool logNoError = true)
+        {
             if (NativeConvert.FromErrno(errno) == 0)
             {
+                if (logNoError)
+                {
+                    //TODO: should log that no exception occured
+                }
                 return;
             }
-            //TODO
-            throw new Exception(string.Format("An exception has occured with the error code: {0:X}", errno));
+            switch (errno)
+            {
+                case Errno.ENOMEM:
+                    throw new OutOfMemoryException();
+                case Errno.EEXIST:
+                    throw new IOException("File already exists", NativeConvert.FromErrno(errno));
+                case Errno.EMFILE:
+                    throw new IOException("Too many files open", NativeConvert.FromErrno(errno));
+                case Errno.ENOTTY:
+                    throw new IOException("Inappropriate I/O control operation", NativeConvert.FromErrno(errno));
+                case Errno.EFBIG:
+                    throw new IOException("File too large", NativeConvert.FromErrno(errno));
+                case Errno.EPIPE:
+                    throw new PipeException("Broken pipe", NativeConvert.FromErrno(errno));
+                case ((Errno)47): //ECANCELED
+                    throw new OperationCanceledException();
+                case ((Errno)48): //ENOTSUP
+                    throw new NotSupportedException();
+            }
+            Mono.Unix.UnixMarshal.ThrowExceptionForError(errno);
         }
+
+        #endregion
 
         /// <summary>
         /// Get the current instance of BPS, or throw an exception if it isn't avaliable.

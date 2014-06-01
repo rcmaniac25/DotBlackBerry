@@ -22,7 +22,7 @@ namespace BlackBerry.BPS
             Util.GetBPSOrException();
             if (BPS.bps_channel_create(out chid, 0) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
         }
 
@@ -81,7 +81,7 @@ namespace BlackBerry.BPS
             disposed = true;
             if (BPS.bps_channel_destroy(chid) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
         }
 

@@ -104,6 +104,8 @@ namespace BlackBerry.BPS
 
         #endregion
 
+        private static OperatingSystem osVer = null;
+
         private IntPtr handle;
         private bool disposed;
 
@@ -116,28 +118,32 @@ namespace BlackBerry.BPS
             Util.GetBPSOrException();
             if (deviceinfo_get_details(out handle) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
             disposed = false;
         }
 
         #region Properties
 
+        // Public due to how often this gets used by .BlackBerry and potentially by programs determining what they can use.
+
         /// <summary>
         /// Current OS version.
         /// </summary>
         [AvailableSince(10, 0)]
-        public OperatingSystem OSVersion
+        public static OperatingSystem OSVersion
         {
             [AvailableSince(10, 0)]
             get
             {
-                if (disposed)
+                if (osVer == null)
                 {
-                    throw new ObjectDisposedException("DeviceInfo");
+                    using (var info = new DeviceInfo())
+                    {
+                        osVer = new OperatingSystem(PlatformID.Unix, Version.Parse(Marshal.PtrToStringAnsi(deviceinfo_details_get_device_os_version(info.handle))));
+                    }
                 }
-                Util.GetBPSOrException();
-                return new OperatingSystem(PlatformID.Unix, Version.Parse(Marshal.PtrToStringAnsi(deviceinfo_details_get_device_os_version(handle))));
+                return osVer;
             }
         }
 

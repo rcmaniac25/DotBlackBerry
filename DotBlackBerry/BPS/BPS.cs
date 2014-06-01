@@ -162,7 +162,7 @@ namespace BlackBerry.BPS
                 // init can be called multiple times
                 if (bps_initialize() != BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
                 if ((initBPScount++) == 1)
                 {
@@ -224,7 +224,7 @@ namespace BlackBerry.BPS
                 }
                 if (bps_channel_set_active(value.Handle) == BPS_FAILURE)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
             }
         }
@@ -629,7 +629,7 @@ namespace BlackBerry.BPS
             IntPtr ev;
             if (bps_get_event(out ev, timeout == Timeout.InfiniteTimeSpan ? -1 : (int)timeout.TotalMilliseconds) != BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
             if (ev == IntPtr.Zero && timeout != Timeout.InfiniteTimeSpan)
             {

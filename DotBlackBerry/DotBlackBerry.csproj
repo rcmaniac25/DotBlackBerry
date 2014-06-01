@@ -38,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -56,10 +57,16 @@
     <Compile Include="BPS\Dialog\AlertDialog.cs" />
     <Compile Include="BPS\Dialog\ContextMenu.cs" />
     <Compile Include="BPS\Dialog\Dialog.cs" />
+    <Compile Include="BPS\ScreenEvent.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screen\ScreenContext.cs" />
+    <Compile Include="Screen\ScreenEvent.cs" />
     <Compile Include="Util.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DotBlackBerry.nuspec" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

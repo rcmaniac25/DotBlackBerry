@@ -57,14 +57,22 @@ namespace BlackBerry
             {
                 if (att is AvailableSinceAttribute)
                 {
-                    using (var deviceInfo = new DeviceInfo())
-                    {
-                        var since = (att as AvailableSinceAttribute).AvailableSince;
-                        return deviceInfo.OSVersion.Version >= since ? FunctionAvailability.Avaliable : FunctionAvailability.NotSupported;
-                    }
+                    return Util.IsCapableOfRunning((att as AvailableSinceAttribute).AvailableSince) ? FunctionAvailability.Avaliable : FunctionAvailability.NotSupported;
                 }
             }
             return FunctionAvailability.Unknown;
+        }
+
+        internal static Version GetRequiredVersion(System.Reflection.MemberInfo member)
+        {
+            foreach (var att in member.GetCustomAttributes(false))
+            {
+                if (att is AvailableSinceAttribute)
+                {
+                    return (att as AvailableSinceAttribute).AvailableSince;
+                }
+            }
+            return new Version(); // 0.0
         }
     }
 }

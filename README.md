@@ -10,11 +10,12 @@ BlackBerry 10 is a great development platform, as there are few restrictions on 
 
 Ok, maybe one big one, there is no support for .Net/Mono.
 
-C/C++: [Check](http://developer.blackberry.com/native/)
-Java (Android version): [Check](http://developer.blackberry.com/android/)
-HTML5: [Check](http://developer.blackberry.com/html5/)
-Adobe Air: [Check](http://developer.blackberry.com/air/)*
-Python: [Check](http://blackberry-py.microcode.ca/)**
+* C/C++: [Check](http://developer.blackberry.com/native/)
+* Java (Android version): [Check](http://developer.blackberry.com/android/)
+* HTML5: [Check](http://developer.blackberry.com/html5/)
+* Adobe Air: [Check](http://developer.blackberry.com/air/)*
+* Python: [Check](http://blackberry-py.microcode.ca/)**
+
 
 .Net/Mono: Missing
 
@@ -37,6 +38,7 @@ Requirements:
 * Download the latest [Release](https://github.com/roblillack/monoberry/releases) from MonoBerry
 * Install [MonoBerry tools for Visual Studio](http://visualstudiogallery.msdn.microsoft.com/b4803586-b446-4df1-8254-978f00ceb52d) (Visual Studio 2012 only right now).
 
+
 1. [Create a MonoBerry project](http://cup-coffe.blogspot.com/2013/06/hello-world-with-monoberry.html), steps 1 and 2, though you don't need to setup the Simulator. Change the Target Framework to .Net 4.5.
 2. Get .BlackBerry. Right now, that means building the libs. Later it would mean using `Install-Package`
 3. Modify monoberry-descriptor.xml to point to the proper libraries. (see below)
@@ -48,13 +50,15 @@ monoberry-descriptor changes
 It is expected that you have Mono installed and have downloaded MonoBerry.
 
 Section #2: Check the executable/libraries that you have created, specifically it's dependencies. List each runtime dependency (as opposed to downloaded packages):
--For mscorlib, link to {MonoBerry}/target/lib/mscorlib.dll.
--For all other libs, link to the Mono lib (for .Net 4.5) for the source.
--Change all link references from 4.0 to 4.5 (since the build should be for .Net 4.5)
+* For mscorlib, link to {MonoBerry}/target/lib/mscorlib.dll.
+* For all other libs, link to the Mono lib (for .Net 4.5) for the source.
+* Change all link references from 4.0 to 4.5 (since the build should be for .Net 4.5)
+
 
 Section #3: Change the runtime links:
--mono should point to {MonoBerry}/target/target/armle-v7/bin/mono
--libgdiplus.so.1 should point to {MonoBerry}/target/target/armle-v7/lib/libgdiplus.so.1
+* mono should point to {MonoBerry}/target/target/armle-v7/bin/mono
+* libgdiplus.so.1 should point to {MonoBerry}/target/target/armle-v7/lib/libgdiplus.so.1
+
 
 Section #4: Change resources and binaries. While it currently points to your application's Debug directory, if you are missing additional dependencies, you may need to add additional asset copies.
 

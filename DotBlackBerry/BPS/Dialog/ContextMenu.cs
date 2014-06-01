@@ -124,7 +124,7 @@ namespace BlackBerry.BPS.Dialog
         {
             if (dialog_create_context_menu(out handle) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
         }
 

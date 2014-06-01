@@ -50,7 +50,7 @@ namespace BlackBerry.BPS.Dialog
         {
             if (dialog_create_alert(out handle) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
         }
 
@@ -72,7 +72,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (dialog_set_alert_message_text(handle, value) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
                 UpdateDialog();
             }
@@ -89,7 +89,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (dialog_set_alert_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
                 UpdateDialog();
             }
@@ -106,7 +106,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (dialog_set_alert_checkbox_checked(handle, value) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
                 UpdateDialog();
             }
@@ -123,7 +123,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (dialog_set_alert_checkbox_label(handle, value) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
                 UpdateDialog();
             }
@@ -140,7 +140,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (dialog_set_alert_checkbox_enabled(handle, value) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
                 UpdateDialog();
             }
@@ -157,7 +157,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (dialog_set_alert_icon(handle, value) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
                 UpdateDialog();
             }

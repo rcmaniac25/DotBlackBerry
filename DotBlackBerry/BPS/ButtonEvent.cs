@@ -60,7 +60,7 @@ namespace BlackBerry.BPS
             var result = button_event_get_button(ev);
             if (result == BPS.BPS_FAILURE)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
             Button = (Button)result;
         }

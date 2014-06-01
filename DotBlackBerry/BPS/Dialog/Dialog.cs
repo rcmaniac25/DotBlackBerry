@@ -305,7 +305,7 @@ namespace BlackBerry.BPS.Dialog
             }
             if (dialog_destroy(handle) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
             dialogs.Remove(handle);
             handle = IntPtr.Zero;
@@ -546,7 +546,7 @@ namespace BlackBerry.BPS.Dialog
         {
             if (dialog_update(handle) != BPS.BPS_SUCCESS && throwOnError)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
         }
 
@@ -611,7 +611,7 @@ namespace BlackBerry.BPS.Dialog
                 }
                 if (dialog_set_default_button_index(handle, index) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
             }
         }
@@ -644,7 +644,7 @@ namespace BlackBerry.BPS.Dialog
                 }
                 if (dialog_set_button_limit(handle, value) != BPS.BPS_SUCCESS)
                 {
-                    Util.ThrowExceptionForErrno();
+                    Util.ThrowExceptionForLastErrno();
                 }
             }
         }
@@ -668,7 +668,7 @@ namespace BlackBerry.BPS.Dialog
             }
             if (!UpdateButtonProperty(index, button, e.PropertyName))
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
         }
 
@@ -692,7 +692,7 @@ namespace BlackBerry.BPS.Dialog
                     {
                         if (!AddButton(e.NewItems[0] as DialogButton))
                         {
-                            Util.ThrowExceptionForErrno();
+                            Util.ThrowExceptionForLastErrno();
                         }
                         if (defaultButton == -1)
                         {
@@ -706,12 +706,12 @@ namespace BlackBerry.BPS.Dialog
                         // Add current last item a second time at end
                         if (!AddButton(buttons[buttonCount - 1]))
                         {
-                            Util.ThrowExceptionForErrno();
+                            Util.ThrowExceptionForLastErrno();
                         }
                         // Change insert item to have values of new item
                         if (!ReplaceButton(e.NewStartingIndex, e.NewItems[0] as DialogButton))
                         {
-                            Util.ThrowExceptionForErrno();
+                            Util.ThrowExceptionForLastErrno();
                         }
                         ((DialogButton)e.NewItems[0]).PropertyChanged += buttonItem_PropertyChanged;
                         // Update all items "after" the insert item
@@ -775,7 +775,7 @@ namespace BlackBerry.BPS.Dialog
                     }
                     else
                     {
-                        Util.ThrowExceptionForErrno();
+                        Util.ThrowExceptionForLastErrno();
                     }
                     break;
 
@@ -794,7 +794,7 @@ namespace BlackBerry.BPS.Dialog
                     }
                     if (!ReplaceButton(e.NewStartingIndex, e.NewItems[0] as DialogButton))
                     {
-                        Util.ThrowExceptionForErrno();
+                        Util.ThrowExceptionForLastErrno();
                     }
                     break;
 
@@ -808,7 +808,7 @@ namespace BlackBerry.BPS.Dialog
                     {
                         if (dialog_remove_button(handle, e.OldStartingIndex) != BPS.BPS_SUCCESS)
                         {
-                            Util.ThrowExceptionForErrno();
+                            Util.ThrowExceptionForLastErrno();
                         }
                         buttonCount--;
                     }

@@ -221,7 +221,7 @@ namespace BlackBerry.BPS
             }
             else
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
             IsDisposable = true;
         }

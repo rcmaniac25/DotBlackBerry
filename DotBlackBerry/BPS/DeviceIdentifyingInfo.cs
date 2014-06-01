@@ -49,7 +49,7 @@ namespace BlackBerry.BPS
             Util.GetBPSOrException();
             if (deviceinfo_get_identifying_details(out handle) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForErrno();
+                Util.ThrowExceptionForLastErrno();
             }
             disposed = false;
         }
