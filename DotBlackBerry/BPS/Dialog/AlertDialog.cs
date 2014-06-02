@@ -175,20 +175,14 @@ namespace BlackBerry.BPS.Dialog
         internal AlertDialogEvent(IntPtr ev, AlertDialog dia)
             : base(ev, dia)
         {
+            Util.GetBPSOrException();
+            CheckboxChecked = AlertDialog.dialog_event_get_alert_checkbox_checked(DangerousGetHandle());
         }
 
         /// <summary>
         /// Get the state of the alert dialog's check box.
         /// </summary>
         [AvailableSince(10, 0)]
-        public bool CheckboxChecked
-        {
-            [AvailableSince(10, 0)]
-            get
-            {
-                Util.GetBPSOrException();
-                return AlertDialog.dialog_event_get_alert_checkbox_checked(DangerousGetHandle());
-            }
-        }
+        public bool CheckboxChecked { [AvailableSince(10, 0)]get; private set; }
     }
 }

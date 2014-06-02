@@ -41,6 +41,8 @@ namespace BlackBerry.BPS
         }
     }
 
+    #region Implementations
+
     /// <summary>
     /// A string allocated by BPS.
     /// </summary>
@@ -69,4 +71,63 @@ namespace BlackBerry.BPS
             return bpsString.Value;
         }
     }
+
+    /// <summary>
+    /// An array of elements allocated by BPS.
+    /// </summary>
+    /// <typeparam name="T">The type of element that makes up the array.</typeparam>
+    [AvailableSince(10, 0)]
+    public abstract class BPSArray<T> : BPSHandle
+    {
+        internal BPSArray(IntPtr ptr, int count)
+            : base(ptr)
+        {
+            var data = new T[count];
+            if (count > 0)
+            {
+                CreateArray(ref data, ptr);
+            }
+        }
+
+        internal abstract void CreateArray(ref T[] data, IntPtr ptr);
+
+        /// <summary>
+        /// Get the value of the BPS array.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        public T[] Value { get; private set; }
+
+        /// <summary>
+        /// Convert a BPSArray into an array.
+        /// </summary>
+        /// <param name="bpsArray">The BPSArray to convert.</param>
+        /// <returns>The array contents.</returns>
+        public static implicit operator T[](BPSArray<T> bpsArray)
+        {
+            return bpsArray.Value;
+        }
+    }
+
+    /// <summary>
+    /// An array of ints allocated by BPS.
+    /// </summary>
+    [AvailableSince(10, 0)]
+    public sealed class BPSIntArray : BPSArray<int>
+    {
+        internal BPSIntArray(IntPtr ptr, int count)
+            : base(ptr, count)
+        {
+        }
+
+        internal override void CreateArray(ref int[] data, IntPtr ptr)
+        {
+            var intSize = sizeof(int);
+            for (var i = 0; i < data.Length; i++)
+            {
+                data[i] = Marshal.ReadInt32(ptr, intSize * i);
+            }
+        }
+    }
+
+#endregion
 }

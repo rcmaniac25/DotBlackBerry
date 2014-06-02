@@ -198,20 +198,14 @@ namespace BlackBerry.BPS.Dialog
         internal PromptDialogEvent(IntPtr ev, PromptDialog dia)
             : base(ev, dia)
         {
+            Util.GetBPSOrException();
+            InputField = Marshal.PtrToStringAnsi(PromptDialog.dialog_event_get_prompt_input_field(DangerousGetHandle()));
         }
 
         /// <summary>
         /// Get the contents of the prompt dialog input field.
         /// </summary>
         [AvailableSince(10, 0)]
-        public string InputField
-        {
-            [AvailableSince(10, 0)]
-            get
-            {
-                Util.GetBPSOrException();
-                return Marshal.PtrToStringAnsi(PromptDialog.dialog_event_get_prompt_input_field(DangerousGetHandle()));
-            }
-        }
+        public string InputField { [AvailableSince(10, 0)]get; private set; }
     }
 }

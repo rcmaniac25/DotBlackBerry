@@ -57,6 +57,7 @@
     <Compile Include="BPS\Dialog\AlertDialog.cs" />
     <Compile Include="BPS\Dialog\ContextMenu.cs" />
     <Compile Include="BPS\Dialog\Dialog.cs" />
+    <Compile Include="BPS\Dialog\PopupListDialog.cs" />
     <Compile Include="BPS\Dialog\PromptDialog.cs" />
     <Compile Include="BPS\ScreenEvent.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
