@@ -6,7 +6,7 @@ BlackBerry 10's API, in an easy to access .Net/Mono form.
 Background
 ========
 
-BlackBerry 10 is a great development platform, as there are few restrictions on HOW you can develop, making it easier to make grate applications.
+BlackBerry 10 is a great development platform, as there are few restrictions on HOW you can develop, making it easier to make great applications.
 
 Ok, maybe one big one, there is no support for .Net/Mono.
 

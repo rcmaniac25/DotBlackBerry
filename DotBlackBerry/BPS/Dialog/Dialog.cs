@@ -41,6 +41,11 @@ namespace BlackBerry.BPS.Dialog
     [AvailableSince(10, 0)]
     public class DialogButton : System.ComponentModel.INotifyPropertyChanged
     {
+        private string label;
+        private bool enabled;
+        private bool visible;
+        private object context;
+
         /// <summary>
         /// Create a new button for a dialog.
         /// </summary>
@@ -56,11 +61,6 @@ namespace BlackBerry.BPS.Dialog
             this.visible = visible;
             this.context = context;
         }
-
-        private string label;
-        private bool enabled;
-        private bool visible;
-        private object context;
 
         /// <summary>
         /// Property change event.

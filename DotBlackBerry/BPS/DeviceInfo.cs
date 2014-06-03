@@ -107,7 +107,6 @@ namespace BlackBerry.BPS
         private static OperatingSystem osVer = null;
 
         private IntPtr handle;
-        private bool disposed;
 
         /// <summary>
         /// Create a new instance of DeviceInfo.
@@ -116,11 +115,11 @@ namespace BlackBerry.BPS
         public DeviceInfo()
         {
             Util.GetBPSOrException();
+            handle = IntPtr.Zero;
             if (deviceinfo_get_details(out handle) != BPS.BPS_SUCCESS)
             {
                 Util.ThrowExceptionForLastErrno();
             }
-            disposed = false;
         }
 
         #region Properties
@@ -156,7 +155,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -174,7 +173,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -192,7 +191,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -210,7 +209,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -228,7 +227,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -246,7 +245,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -264,7 +263,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -282,7 +281,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -300,7 +299,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 1)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -318,7 +317,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceInfo");
                 }
@@ -335,12 +334,12 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public void Dispose()
         {
-            if (disposed)
+            if (handle == IntPtr.Zero)
             {
                 throw new ObjectDisposedException("DeviceInfo");
             }
-            disposed = true;
             deviceinfo_free_details(ref handle);
+            handle = IntPtr.Zero;
         }
 
         #region Functions
@@ -353,7 +352,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public string GetProcessorCoreName(int index)
         {
-            if (disposed)
+            if (handle == IntPtr.Zero)
             {
                 throw new ObjectDisposedException("DeviceInfo");
             }
@@ -373,7 +372,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 2)]
         public int GetProcessorCoreSpeed(int index)
         {
-            if (disposed)
+            if (handle == IntPtr.Zero)
             {
                 throw new ObjectDisposedException("DeviceInfo");
             }

@@ -10,7 +10,6 @@ namespace BlackBerry.BPS
     public sealed class Channel : IDisposable
     {
         private int chid;
-        private bool disposed;
 
         /// <summary>
         /// Create a new instance of a BPS channel.
@@ -29,7 +28,6 @@ namespace BlackBerry.BPS
         internal Channel(int chid)
         {
             this.chid = chid;
-            disposed = false;
             OwnerThread = Thread.CurrentThread;
         }
 
@@ -55,7 +53,7 @@ namespace BlackBerry.BPS
         {
             get
             {
-                if (disposed)
+                if (chid == 0)
                 {
                     throw new ObjectDisposedException("Channel");
                 }
@@ -74,15 +72,15 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public void Dispose()
         {
-            if (disposed)
+            if (chid == 0)
             {
                 throw new ObjectDisposedException("Channel");
             }
-            disposed = true;
             if (BPS.bps_channel_destroy(chid) != BPS.BPS_SUCCESS)
             {
                 Util.ThrowExceptionForLastErrno();
             }
+            chid = 0;
         }
 
         /// <summary>
@@ -93,7 +91,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public bool PushEvent(BPSEvent ev)
         {
-            if (disposed)
+            if (chid == 0)
             {
                 throw new ObjectDisposedException("Channel");
             }
@@ -109,7 +107,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public bool PushDelegate(Action<object> exec, object args = null)
         {
-            if (disposed)
+            if (chid == 0)
             {
                 throw new ObjectDisposedException("Channel");
             }

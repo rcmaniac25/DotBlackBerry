@@ -104,6 +104,8 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private PopupListItem[] items;
+
         /// <summary>
         /// Create a new popup list.
         /// </summary>
@@ -113,8 +115,6 @@ namespace BlackBerry.BPS.Dialog
         {
             items = null;
         }
-
-        private PopupListItem[] items;
 
         internal override void CreateDialog()
         {
@@ -278,7 +278,7 @@ namespace BlackBerry.BPS.Dialog
         /// Specify whether the popup list dialog is cancelled when an item is selected.
         /// </summary>
         [AvailableSince(10, 2)]
-        public bool AllowDeselect
+        public bool CancelOnSelection
         {
             [AvailableSince(10, 2)]
             set

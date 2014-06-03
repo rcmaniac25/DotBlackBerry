@@ -15,7 +15,7 @@ namespace BlackBerry.BPS
         private static extern int deviceinfo_get_identifying_details(out IntPtr details);
 
         [DllImport("bps")]
-        private static extern void deviceinfo_free_identifying_details(ref IntPtr details);
+        private static extern void deviceinfo_free_identifying_details([In, Out]ref IntPtr details);
 
         [DllImport("bps")]
         private static extern int deviceinfo_identifying_details_get_pin(IntPtr details);
@@ -38,7 +38,6 @@ namespace BlackBerry.BPS
         #endregion
 
         private IntPtr handle;
-        private bool disposed;
 
         /// <summary>
         /// Create a new instance of DeviceIdentifyingInfo.
@@ -47,11 +46,11 @@ namespace BlackBerry.BPS
         public DeviceIdentifyingInfo()
         {
             Util.GetBPSOrException();
+            handle = IntPtr.Zero;
             if (deviceinfo_get_identifying_details(out handle) != BPS.BPS_SUCCESS)
             {
                 Util.ThrowExceptionForLastErrno();
             }
-            disposed = false;
         }
 
         #region Properties
@@ -65,7 +64,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceIdentifyingInfo");
                 }
@@ -83,7 +82,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceIdentifyingInfo");
                 }
@@ -101,7 +100,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceIdentifyingInfo");
                 }
@@ -119,7 +118,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceIdentifyingInfo");
                 }
@@ -137,7 +136,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceIdentifyingInfo");
                 }
@@ -155,7 +154,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 2)]
             get
             {
-                if (disposed)
+                if (handle == IntPtr.Zero)
                 {
                     throw new ObjectDisposedException("DeviceIdentifyingInfo");
                 }
@@ -172,12 +171,12 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public void Dispose()
         {
-            if (disposed)
+            if (handle == IntPtr.Zero)
             {
                 throw new ObjectDisposedException("DeviceInfo");
             }
-            disposed = true;
             deviceinfo_free_identifying_details(ref handle);
+            handle = IntPtr.Zero;
         }
     }
 }
