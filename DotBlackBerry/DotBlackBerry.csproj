@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvailableSinceAttribute.cs" />
+    <Compile Include="BPS\BatteryInfo.cs" />
     <Compile Include="BPS\BPS.cs" />
     <Compile Include="BPS\BPSEvent.cs" />
     <Compile Include="BPS\BPSExtensions.cs" />
