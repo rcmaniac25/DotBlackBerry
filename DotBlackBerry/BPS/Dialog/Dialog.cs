@@ -36,6 +36,99 @@ namespace BlackBerry.BPS.Dialog
     }
 
     /// <summary>
+    /// Localized button labels.
+    /// </summary>
+    [AvailableSince(10, 0)]
+    public enum LocalizedButtonLabels
+    {
+        /// <summary>
+        /// The OK label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Ok,
+        /// <summary>
+        /// The Cancel label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Cancel,
+        /// <summary>
+        /// The Cut label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Cut,
+        /// <summary>
+        /// The Copy label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Copy,
+        /// <summary>
+        /// The Paste label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Paste,
+        /// <summary>
+        /// The Select label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Select,
+        /// <summary>
+        /// The Delete label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        Delete,
+        /// <summary>
+        /// The View Image label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        ViewImage,
+        /// <summary>
+        /// The Save Image label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        SaveImage,
+        /// <summary>
+        /// The Save Link As label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        SaveLinkAs,
+        /// <summary>
+        /// The Open Link in New Tab label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        OpenLinkInNewTab,
+        /// <summary>
+        /// The Copy Link label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        CopyLink,
+        /// <summary>
+        /// The Open Link label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        OpenLink,
+        /// <summary>
+        /// The Copy Image Link label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        CopyImageLink,
+        /// <summary>
+        /// The Clear Field label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        ClearField,
+        /// <summary>
+        /// The Cancel Selection label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        CancelSelection,
+        /// <summary>
+        /// The Bookmark Link label.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        BookmarkLink
+    }
+
+    /// <summary>
     /// A button on a dialog.
     /// </summary>
     [AvailableSince(10, 0)]
@@ -260,6 +353,7 @@ namespace BlackBerry.BPS.Dialog
         private int defaultButton;
         private int invalidButtons;
         private ObservableCollection<DialogButton> buttons;
+        private bool isVisible;
 
         internal Dialog()
         {
@@ -272,6 +366,7 @@ namespace BlackBerry.BPS.Dialog
             }
             dialogs.Add(handle, this);
             setupButtons();
+            isVisible = false;
         }
 
         internal Dialog(IntPtr ptr)
@@ -283,6 +378,7 @@ namespace BlackBerry.BPS.Dialog
                 throw new InvalidOperationException("Could not create dialog");
             }
             setupButtons();
+            isVisible = false;
             // Don't add to dialog list, this is probably coming from an event, meaning it's already in the list.
         }
 
@@ -309,6 +405,7 @@ namespace BlackBerry.BPS.Dialog
             }
             dialogs.Remove(handle);
             handle = IntPtr.Zero;
+            isVisible = false;
 
             // Cleanup buttons so nothing gets screwed up if the button is reused
             buttons.CollectionChanged -= buttons_CollectionChanged;
@@ -380,6 +477,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 dia = new GenericDialog(diaPtr);
             }
+            dia.isVisible = false;
             return dia.GetEventForDialog(evPtr);
         }
 
@@ -449,6 +547,19 @@ namespace BlackBerry.BPS.Dialog
                 {
                     UpdateDialog();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Get if the dialog is visible right now. This is a guess based on actions that have occured within the dialog functions.
+        /// </summary>
+        [AvailableSince(10, 0)]
+        public bool IsVisible
+        {
+            [AvailableSince(10, 0)]
+            get
+            {
+                return isVisible;
             }
         }
 
@@ -542,12 +653,17 @@ namespace BlackBerry.BPS.Dialog
 
         #region Functions
 
-        internal void UpdateDialog(bool throwOnError = true)
+        internal bool UpdateDialog(bool throwOnError = true)
         {
-            if (dialog_update(handle) != BPS.BPS_SUCCESS && throwOnError)
+            if (isVisible && dialog_update(handle) != BPS.BPS_SUCCESS)
             {
-                Util.ThrowExceptionForLastErrno();
+                if (throwOnError)
+                {
+                    Util.ThrowExceptionForLastErrno();
+                }
+                return false;
             }
+            return true;
         }
 
         /// <summary>
@@ -561,7 +677,9 @@ namespace BlackBerry.BPS.Dialog
             {
                 throw new ObjectDisposedException("Dialog");
             }
-            return dialog_show(handle) == BPS.BPS_SUCCESS;
+            var result = dialog_show(handle) == BPS.BPS_SUCCESS;
+            isVisible |= result;
+            return result;
         }
 
         /// <summary>
@@ -575,7 +693,9 @@ namespace BlackBerry.BPS.Dialog
             {
                 throw new ObjectDisposedException("Dialog");
             }
-            return dialog_cancel(handle) == BPS.BPS_SUCCESS;
+            var result = dialog_cancel(handle) == BPS.BPS_SUCCESS;
+            isVisible &= !result;
+            return result;
         }
 
         #endregion
@@ -846,6 +966,59 @@ namespace BlackBerry.BPS.Dialog
                     throw new ArgumentException(string.Format("Unknown property: {0}", property));
             }
         }
+
+        #region GetLabelValueForButton
+
+        /// <summary>
+        /// Get the string value that, when applied to a button label, will be localized based on the system's locale.
+        /// </summary>
+        /// <param name="buttonLabel">The button label to get.</param>
+        /// <returns>The string value that will be localized.</returns>
+        [AvailableSince(10, 0)]
+        public static string GetLabelValueForButton(LocalizedButtonLabels buttonLabel)
+        {
+            switch (buttonLabel)
+            {
+                case LocalizedButtonLabels.Ok:
+                    return "OK";
+                case LocalizedButtonLabels.Cancel:
+                    return "CANCEL";
+                case LocalizedButtonLabels.Cut:
+                    return "CUT";
+                case LocalizedButtonLabels.Copy:
+                    return "COPY";
+                case LocalizedButtonLabels.Paste:
+                    return "PASTE";
+                case LocalizedButtonLabels.Select:
+                    return "SELECT";
+                case LocalizedButtonLabels.Delete:
+                    return "DELETE";
+                case LocalizedButtonLabels.ViewImage:
+                    return "VIEW_IMAGE";
+                case LocalizedButtonLabels.SaveImage:
+                    return "SAVE_IMAGE";
+                case LocalizedButtonLabels.SaveLinkAs:
+                    return "SAVE_LINK_AS";
+                case LocalizedButtonLabels.OpenLinkInNewTab:
+                    return "OPEN_LINK_NEW_TAB";
+                case LocalizedButtonLabels.CopyLink:
+                    return "COPY_LINK";
+                case LocalizedButtonLabels.OpenLink:
+                    return "OPEN_LINK";
+                case LocalizedButtonLabels.CopyImageLink:
+                    return "COPY_IMAGE_LINK";
+                case LocalizedButtonLabels.ClearField:
+                    return "CLEAR_FIELD";
+                case LocalizedButtonLabels.CancelSelection:
+                    return "CANCEL_SELECTION";
+                case LocalizedButtonLabels.BookmarkLink:
+                    return "BOOKMARK_LINK";
+                default:
+                    throw new ArgumentException(string.Format("Unknown argument: {0}"), "buttonLabel");
+            }
+        }
+
+        #endregion
 
         #endregion
     }
