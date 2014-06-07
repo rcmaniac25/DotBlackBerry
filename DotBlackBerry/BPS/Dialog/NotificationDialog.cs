@@ -222,7 +222,7 @@ namespace BlackBerry.BPS.Dialog
         public bool SetStartDateTime(DateTime dateTime, DateTimeFormat date, DateTimeFormat time, DateTimeFormat week = DateTimeFormat.None)
         {
             if (dialog_set_notification_start_date_format(handle, (int)date, (int)time, (int)week) != BPS.BPS_SUCCESS && 
-                dialog_set_notification_start_date_time(handle, (long)(dateTime - GetEpoch()).TotalMilliseconds) != BPS.BPS_SUCCESS)
+                dialog_set_notification_start_date_time(handle, (long)(dateTime.ToUniversalTime() - GetEpoch()).TotalMilliseconds) != BPS.BPS_SUCCESS)
             {
                 return false;
             }
@@ -258,7 +258,7 @@ namespace BlackBerry.BPS.Dialog
         public bool SetEndDateTime(DateTime dateTime, DateTimeFormat date, DateTimeFormat time, DateTimeFormat week = DateTimeFormat.None)
         {
             if (dialog_set_notification_end_date_format(handle, (int)date, (int)time, (int)week) != BPS.BPS_SUCCESS &&
-                dialog_set_notification_end_date_time(handle, (long)(dateTime - GetEpoch()).TotalMilliseconds) != BPS.BPS_SUCCESS)
+                dialog_set_notification_end_date_time(handle, (long)(dateTime.ToUniversalTime() - GetEpoch()).TotalMilliseconds) != BPS.BPS_SUCCESS)
             {
                 return false;
             }

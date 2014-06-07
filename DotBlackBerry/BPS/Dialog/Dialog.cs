@@ -1033,9 +1033,10 @@ namespace BlackBerry.BPS.Dialog
             : base(ev, false)
         {
             Util.GetBPSOrException();
+            var ptr = DangerousGetHandle();
             Dialog = dia;
-            Error = Marshal.PtrToStringAnsi(Dialog.dialog_event_get_error(DangerousGetHandle()));
-            SelectedButton = dia.Buttons[Dialog.dialog_event_get_selected_index(DangerousGetHandle())];
+            Error = Marshal.PtrToStringAnsi(Dialog.dialog_event_get_error(ptr));
+            SelectedButton = dia.Buttons[Dialog.dialog_event_get_selected_index(ptr)];
         }
 
         /// <summary>
