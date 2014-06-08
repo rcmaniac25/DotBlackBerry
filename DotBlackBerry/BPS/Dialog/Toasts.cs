@@ -97,6 +97,9 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string message = null; //XXX
+        private ToastPosition position = ToastPosition.MiddleCenter;
+
         /// <summary>
         /// Create a new text toast.
         /// </summary>
@@ -123,13 +126,22 @@ namespace BlackBerry.BPS.Dialog
         public string Message
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return message;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_toast_message_text(handle, value) != BPS.BPS_SUCCESS)
+                if (message != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_toast_message_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    message = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -140,13 +152,22 @@ namespace BlackBerry.BPS.Dialog
         public ToastPosition Position
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return position;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_toast_position(handle, (int)value) != BPS.BPS_SUCCESS)
+                if (position != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_toast_position(handle, (int)value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    position = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -173,6 +194,8 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string path = null; //XXX
+
         /// <summary>
         /// Create a new icon toast.
         /// </summary>
@@ -197,13 +220,22 @@ namespace BlackBerry.BPS.Dialog
         public string IconPath
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return path;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_toast_icon(handle, value) != BPS.BPS_SUCCESS)
+                if (path != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_toast_icon(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    path = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
     }
@@ -234,6 +266,10 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private ProgressState state = ProgressState.Play;
+        private int level = 0; //XXX
+        private string details = null; //XXX
+
         /// <summary>
         /// Create a new progress toast.
         /// </summary>
@@ -260,13 +296,22 @@ namespace BlackBerry.BPS.Dialog
         public ProgressState State
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return state;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_toast_state(handle, (int)value) != BPS.BPS_SUCCESS)
+                if (state != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_toast_state(handle, (int)value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    state = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -277,17 +322,26 @@ namespace BlackBerry.BPS.Dialog
         public int Progress
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return level;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (value < -1 || value > 100)
+                if (level != value)
                 {
-                    throw new ArgumentOutOfRangeException("Progress", "0 <= Progress <= 100 OR -1 for indefinite progress");
+                    if (value < -1 || value > 100)
+                    {
+                        throw new ArgumentOutOfRangeException("Progress", "0 <= Progress <= 100 OR -1 for indefinite progress");
+                    }
+                    if (dialog_set_progress_toast_level(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    level = value;
+                    UpdateDialog();
                 }
-                if (dialog_set_progress_toast_level(handle, value) != BPS.BPS_SUCCESS)
-                {
-                    Util.ThrowExceptionForLastErrno();
-                }
-                UpdateDialog();
             }
         }
 
@@ -298,13 +352,22 @@ namespace BlackBerry.BPS.Dialog
         public string Details
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return details;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_toast_details(handle, value) != BPS.BPS_SUCCESS)
+                if (details != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_toast_details(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    details = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -343,6 +406,12 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string device = null; //XXX
+        private bool muted = false; //XXX
+        private int level = 0; //XXX
+        private VolumeDirection direction = VolumeDirection.Up; //XXX
+        private VolumeControlType type = VolumeControlType.Simple; //XXX
+
         /// <summary>
         /// Create a new volume toast.
         /// </summary>
@@ -369,13 +438,22 @@ namespace BlackBerry.BPS.Dialog
         public string Device
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return device;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_volume_toast_device_text(handle, value) != BPS.BPS_SUCCESS)
+                if (device != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_volume_toast_device_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    device = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -386,13 +464,22 @@ namespace BlackBerry.BPS.Dialog
         public bool Muted
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return muted;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_volume_toast_muted(handle, value) != BPS.BPS_SUCCESS)
+                if (muted != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_volume_toast_muted(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    muted = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -403,13 +490,22 @@ namespace BlackBerry.BPS.Dialog
         public int Level
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return level;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_volume_toast_level(handle, value) != BPS.BPS_SUCCESS)
+                if (level != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_volume_toast_level(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    level = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -420,13 +516,22 @@ namespace BlackBerry.BPS.Dialog
         public VolumeDirection Direction
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return direction;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_volume_toast_direction(handle, (int)value) != BPS.BPS_SUCCESS)
+                if (direction != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_volume_toast_direction(handle, (int)value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    direction = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -437,13 +542,22 @@ namespace BlackBerry.BPS.Dialog
         public VolumeControlType Type
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return type;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_volume_toast_control(handle, (int)value) != BPS.BPS_SUCCESS)
+                if (type != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_volume_toast_control(handle, (int)value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    type = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 

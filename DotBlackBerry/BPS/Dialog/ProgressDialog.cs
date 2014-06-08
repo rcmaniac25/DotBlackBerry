@@ -60,6 +60,14 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string message = null; //XXX
+        private bool hasEmoticons = false; //XXX
+        private int level = 0;
+        private string icon = null; //XXX
+        private ProgressState state = ProgressState.Play;
+        private string leftDetails = null; //XXX
+        private string rightDetails = null; //XXX
+
         /// <summary>
         /// Create a new progress dialog.
         /// </summary>
@@ -80,125 +88,188 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set the message text of a progress dialog.
+        /// Get or set the message text of a progress dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Message
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return message;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_message_text(handle, value) != BPS.BPS_SUCCESS)
+                if (message != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_message_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    message = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set whether the message text has emoticons.
+        /// Get or set whether the message text has emoticons.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool HasEmoticons
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return hasEmoticons;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                if (hasEmoticons != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    hasEmoticons = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the progress level of a progress dialog.
+        /// Get or set the progress level of a progress dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public int Progress
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return level;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (value < -1 || value > 100)
+                if (level != value)
                 {
-                    throw new ArgumentOutOfRangeException("Progress", "0 <= Progress <= 100 OR -1 for indefinite progress");
+                    if (value < -1 || value > 100)
+                    {
+                        throw new ArgumentOutOfRangeException("Progress", "0 <= Progress <= 100 OR -1 for indefinite progress");
+                    }
+                    if (dialog_set_progress_level(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    level = value;
+                    UpdateDialog();
                 }
-                if (dialog_set_progress_level(handle, value) != BPS.BPS_SUCCESS)
-                {
-                    Util.ThrowExceptionForLastErrno();
-                }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the icon of a progress dialog.
+        /// Get or set the icon of a progress dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string IconPath
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return icon;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_icon(handle, value) != BPS.BPS_SUCCESS)
+                if (icon != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_icon(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    icon = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the progress state of a progress dialog.
+        /// Get or set the progress state of a progress dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public ProgressState State
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return state;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_state(handle, (int)value) != BPS.BPS_SUCCESS)
+                if (state != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_state(handle, (int)value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    state = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the left side details text of a progress dialog.
+        /// Get or set the left side details text of a progress dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string LeftDetails
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return leftDetails;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_left_details(handle, value) != BPS.BPS_SUCCESS)
+                if (leftDetails != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_left_details(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    leftDetails = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the right side details text of a progress dialog.
+        /// Get or set the right side details text of a progress dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string RightDetails
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return rightDetails;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_progress_right_details(handle, value) != BPS.BPS_SUCCESS)
+                if (rightDetails != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_progress_right_details(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    rightDetails = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 

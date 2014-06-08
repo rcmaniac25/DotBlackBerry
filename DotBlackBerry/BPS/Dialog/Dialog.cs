@@ -397,6 +397,11 @@ namespace BlackBerry.BPS.Dialog
             return new GenericDialogEvent(ev, this);
         }
 
+        internal void ResetInputFlags()
+        {
+            inputFlags = InputFlags.None;
+        }
+
         /// <summary>
         /// Dispose of the Dialog.
         /// </summary>

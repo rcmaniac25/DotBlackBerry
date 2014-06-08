@@ -40,6 +40,14 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string message = null; //XXX
+        private bool hasEmoticons = false; //XXX
+        private string input = null; //XXX
+        private string inputPlaceholder = null; //XXX
+        private int maxChars = 1024; //XXX
+        private bool displayAsPassword = false;
+        private VirtualKeyboardLayout keyboard = VirtualKeyboardLayout.Default;
+
         /// <summary>
         /// Create a new prompt dialog.
         /// </summary>
@@ -70,103 +78,157 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set a prompt dialog's message text.
+        /// Get or set a prompt dialog's message text.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Message
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return message;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_prompt_message_text(handle, value) != BPS.BPS_SUCCESS)
+                if (message != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_prompt_message_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    message = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set whether the message text has emoticons.
+        /// Get or set whether the message text has emoticons.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool HasEmoticons
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return hasEmoticons;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_prompt_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                if (hasEmoticons != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_prompt_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    hasEmoticons = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial text of the input field of a prompt dialog.
+        /// Get or set the initial text of the input field of a prompt dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string InputField
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return input;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_prompt_input_field(handle, value) != BPS.BPS_SUCCESS)
+                if (input != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_prompt_input_field(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    input = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the placeholder text of the input field of a prompt dialog.
+        /// Get or set the placeholder text of the input field of a prompt dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string InputPlaceholder
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return inputPlaceholder;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_prompt_input_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                if (inputPlaceholder != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_prompt_input_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    inputPlaceholder = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the maximum number of characters of the input field of a prompt dialog.
+        /// Get or set the maximum number of characters of the input field of a prompt dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public int MaxInputCharacters
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return maxChars;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_prompt_maximum_characters(handle, value) != BPS.BPS_SUCCESS)
+                if (maxChars != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_prompt_maximum_characters(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    maxChars = value;
                 }
             }
         }
 
         /// <summary>
-        /// Set whether to display the field as a password input.
+        /// Get or set whether to display the field as a password input.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool ShouldDisplayAsPassword
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return displayAsPassword;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_prompt_display_as_password(handle, value) != BPS.BPS_SUCCESS)
+                if (displayAsPassword != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_prompt_display_as_password(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    displayAsPassword = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -177,11 +239,22 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardLayout KeyboardLayout
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return keyboard;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_prompt_input_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                if (keyboard != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_prompt_input_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    keyboard = value;
+                    ResetInputFlags();
+                    UpdateDialog();
                 }
             }
         }

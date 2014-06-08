@@ -76,6 +76,22 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string error = null; //XXX
+        private string user = null; //XXX
+        private string userPlaceholder = null; //XXX
+        private VirtualKeyboardLayout userKeyboard = VirtualKeyboardLayout.Default;
+        private string oldPass = null; //XXX
+        private string oldPassPlaceholder = null; //XXX
+        private VirtualKeyboardLayout oldPassKeyboard = VirtualKeyboardLayout.Default;
+        private string newPass = null; //XXX
+        private string newPassPlaceholder = null; //XXX
+        private VirtualKeyboardLayout newPassKeyboard = VirtualKeyboardLayout.Default;
+        private string confPass = null; //XXX
+        private string confPassPlaceholder = null; //XXX
+        private VirtualKeyboardLayout confPassKeyboard = VirtualKeyboardLayout.Default;
+        private bool rememberMe = false; //XXX
+        private string rememberMeLabel = null; //XXX
+
         /// <summary>
         /// Create a new password change dialog.
         /// </summary>
@@ -101,53 +117,80 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set the error text of a password change dialog.
+        /// Get or set the error text of a password change dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string ErrorText
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return error;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_error_text(handle, value) != BPS.BPS_SUCCESS)
+                if (error != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_error_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    error = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial text of the username input field.
+        /// Get or set the initial text of the username input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string UsernameInitial
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return user;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_username(handle, value) != BPS.BPS_SUCCESS)
+                if (user != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_username(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    user = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the placeholder text of the username input field.
+        /// Get or set the placeholder text of the username input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string UsernamePlaceholder
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return userPlaceholder;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_username_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                if (userPlaceholder != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_username_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    userPlaceholder = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -158,47 +201,75 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardLayout UsernameKeyboard
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return userKeyboard;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_username_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                if (userKeyboard != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_username_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    userKeyboard = value;
+                    ResetInputFlags();
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial text of the old password input field.
+        /// Get or set the initial text of the old password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string OldPasswordInitial
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return oldPass;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_old_password(handle, value) != BPS.BPS_SUCCESS)
+                if (oldPass != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_old_password(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    oldPass = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the placeholder text of the old password input field.
+        /// Get or set the placeholder text of the old password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string OldPasswordPlaceholder
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return oldPassPlaceholder;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_old_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                if (oldPassPlaceholder != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_old_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    oldPassPlaceholder = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -209,47 +280,75 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardLayout OldPasswordKeyboard
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return oldPassKeyboard;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_old_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                if (oldPassKeyboard != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_old_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    oldPassKeyboard = value;
+                    ResetInputFlags();
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial text of the new password input field.
+        /// Get or set the initial text of the new password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string NewPasswordInitial
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return newPass;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_new_password(handle, value) != BPS.BPS_SUCCESS)
+                if (newPass != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_new_password(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    newPass = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the placeholder text of the new password input field.
+        /// Get or set the placeholder text of the new password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string NewPasswordPlaceholder
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return newPassPlaceholder;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_new_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                if (newPassPlaceholder != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_new_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    newPassPlaceholder = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -260,47 +359,75 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardLayout NewPasswordKeyboard
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return newPassKeyboard;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_new_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                if (newPassKeyboard != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_new_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    newPassKeyboard = value;
+                    ResetInputFlags();
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial text of the confirm password input field.
+        /// Get or set the initial text of the confirm password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string ConfirmPasswordInitial
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return confPass;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_confirm_password(handle, value) != BPS.BPS_SUCCESS)
+                if (confPass != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_confirm_password(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    confPass = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the placeholder text of the confirm password input field.
+        /// Get or set the placeholder text of the confirm password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string ConfirmPasswordPlaceholder
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return confPassPlaceholder;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_confirm_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                if (confPassPlaceholder != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_confirm_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    confPassPlaceholder = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -311,47 +438,75 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardLayout ConfirmPasswordKeyboard
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return confPassKeyboard;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_confirm_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                if (confPassKeyboard != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_confirm_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    confPassKeyboard = value;
+                    ResetInputFlags();
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial state of the "Remember me" check box.
+        /// Get or set the initial state of the "Remember me" check box.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool RememberMeChecked
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return rememberMe;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_remember_me(handle, value) != BPS.BPS_SUCCESS)
+                if (rememberMe != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_remember_me(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    rememberMe = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the label for the "Remember me" check box.
+        /// Get or set the label for the "Remember me" check box.
         /// </summary>
         [AvailableSince(10, 0)]
         public string RememberMeLabel
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return rememberMeLabel;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_password_change_remember_me_label(handle, value) != BPS.BPS_SUCCESS)
+                if (rememberMeLabel != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_password_change_remember_me_label(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    rememberMeLabel = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 

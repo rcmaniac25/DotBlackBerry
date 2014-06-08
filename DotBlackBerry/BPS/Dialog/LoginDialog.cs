@@ -60,6 +60,15 @@ namespace BlackBerry.BPS.Dialog
 
         private string message = null; //XXX
         private bool hasEmoticons = false; //XXX
+        private string error = null; //XXX
+        private string user = null; //XXX
+        private string userPlaceholder = null; //XXX
+        private VirtualKeyboardLayout userKeyboard = VirtualKeyboardLayout.Default;
+        private string pass = null; //XXX
+        private string passPlaceholder = null; //XXX
+        private VirtualKeyboardLayout passKeyboard = VirtualKeyboardLayout.Default;
+        private bool rememberMe = false; //XXX
+        private string rememberMeLabel = null; //XXX
 
         /// <summary>
         /// Create a new login dialog.
@@ -138,53 +147,80 @@ namespace BlackBerry.BPS.Dialog
         }
 
         /// <summary>
-        /// Set the error text of a login dialog.
+        /// Get or set the error text of a login dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string ErrorText
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return error;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_error_text(handle, value) != BPS.BPS_SUCCESS)
+                if (error != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_error_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    error = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial text of the username input field.
+        /// Get or set the initial text of the username input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string UsernameInitial
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return user;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_username(handle, value) != BPS.BPS_SUCCESS)
+                if (user != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_username(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    user = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the placeholder text of the username input field.
+        /// Get or set the placeholder text of the username input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string UsernamePlaceholder
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return userPlaceholder;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_username_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                if (userPlaceholder != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_username_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    userPlaceholder = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -195,47 +231,75 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardLayout UsernameKeyboard
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return userKeyboard;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_username_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                if (userKeyboard != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_username_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    userKeyboard = value;
+                    ResetInputFlags();
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial text of the password input field.
+        /// Get or set the initial text of the password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string PasswordInitial
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return pass;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_password(handle, value) != BPS.BPS_SUCCESS)
+                if (pass != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_password(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    pass = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the placeholder text of the password input field.
+        /// Get or set the placeholder text of the password input field.
         /// </summary>
         [AvailableSince(10, 0)]
         public string PasswordPlaceholder
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return passPlaceholder;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                if (passPlaceholder != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_password_placeholder(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    passPlaceholder = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -246,47 +310,75 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardLayout PasswordKeyboard
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return passKeyboard;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                if (passKeyboard != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_password_keyboard_layout(handle, VirtualKeyboard.LayoutToInt(value)) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    passKeyboard = value;
+                    ResetInputFlags();
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial state of the "Remember me" check box.
+        /// Get or set the initial state of the "Remember me" check box.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool RememberMeChecked
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return rememberMe;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_remember_me(handle, value) != BPS.BPS_SUCCESS)
+                if (rememberMe != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_remember_me(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    rememberMe = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the label for the "Remember me" check box.
+        /// Get or set the label for the "Remember me" check box.
         /// </summary>
         [AvailableSince(10, 0)]
         public string RememberMeLabel
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return rememberMeLabel;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_remember_me_label(handle, value) != BPS.BPS_SUCCESS)
+                if (rememberMeLabel != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_remember_me_label(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    rememberMeLabel = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 

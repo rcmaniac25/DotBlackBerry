@@ -80,6 +80,13 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string message = null; //XXX
+        private bool hasEmoticons = false; //XXX
+        private string subject = null; //XXX
+        private string icon = null; //XXX
+        private bool contentLocked = false; //XXX
+        private bool contentSelectable = false; //XXX
+
         /// <summary>
         /// Create a new notification dialog.
         /// </summary>
@@ -100,104 +107,158 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set the message text of a notification dialog.
+        /// Get or set the message text of a notification dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Message
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return message;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_notification_message_text(handle, value) != BPS.BPS_SUCCESS)
+                if (message != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_notification_message_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    message = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set whether the message text has emoticons.
+        /// Get or set whether the message text has emoticons.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool HasEmoticons
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return hasEmoticons;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_notification_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                if (hasEmoticons != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_notification_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    hasEmoticons = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the subject text of a notification dialog.
+        /// Get or set the subject text of a notification dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Subject
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return subject;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_notification_subject_text(handle, value) != BPS.BPS_SUCCESS)
+                if (subject != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_notification_subject_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    subject = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the icon of a progress dialog.
+        /// Get or set the icon of a progress dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string IconPath
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return icon;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_notification_icon(handle, value) != BPS.BPS_SUCCESS)
+                if (icon != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_notification_icon(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    icon = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set whether the content is locked in a notification dialog.
+        /// Get or set whether the content is locked in a notification dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool ContentLocked
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return contentLocked;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_notification_content_locked(handle, value) != BPS.BPS_SUCCESS)
+                if (contentLocked != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_notification_content_locked(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    contentLocked = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set whether the content is selectable in a notification dialog.
+        /// Get or set whether the content is selectable in a notification dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool ContentSelectable
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return contentSelectable;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_notification_content_selectable(handle, value) != BPS.BPS_SUCCESS)
+                if (contentSelectable != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_notification_content_selectable(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    contentSelectable = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 

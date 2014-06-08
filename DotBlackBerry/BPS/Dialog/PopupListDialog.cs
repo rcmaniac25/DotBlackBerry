@@ -105,6 +105,11 @@ namespace BlackBerry.BPS.Dialog
         #endregion
 
         private PopupListItem[] items;
+        private int firstVisible = 0;
+        private bool multiselect = false;
+        private bool deselect = true;
+        private bool cancelOnSelect = false;
+        private bool basicSelect = false;
 
         /// <summary>
         /// Create a new popup list.
@@ -223,21 +228,30 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set the index of the first visible item in a popup list dialog.
+        /// Get or set the index of the first visible item in a popup list dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public int FirstVisible
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return firstVisible;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (value < 0 || value > items.Length)
+                if (firstVisible != value)
                 {
-                    throw new ArgumentOutOfRangeException("0 <= FirstVisible < Items.Length");
-                }
-                if (dialog_set_popuplist_scroll_to_index(handle, value) != BPS.BPS_SUCCESS)
-                {
-                    Util.ThrowExceptionForLastErrno();
+                    if (value < 0 || value > items.Length)
+                    {
+                        throw new ArgumentOutOfRangeException("0 <= FirstVisible < Items.Length");
+                    }
+                    if (dialog_set_popuplist_scroll_to_index(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    firstVisible = value;
                 }
             }
         }
@@ -249,11 +263,20 @@ namespace BlackBerry.BPS.Dialog
         public bool MultiSelect
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return multiselect;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_popuplist_multiselect(handle, value) != BPS.BPS_SUCCESS)
+                if (multiselect != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_popuplist_multiselect(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    multiselect = value;
                 }
             }
         }
@@ -265,11 +288,20 @@ namespace BlackBerry.BPS.Dialog
         public bool AllowDeselect
         {
             [AvailableSince(10, 2)]
+            get
+            {
+                return deselect;
+            }
+            [AvailableSince(10, 2)]
             set
             {
-                if (dialog_set_popuplist_allow_deselect(handle, value) != BPS.BPS_SUCCESS)
+                if (deselect != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_popuplist_allow_deselect(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    deselect = value;
                 }
             }
         }
@@ -281,11 +313,20 @@ namespace BlackBerry.BPS.Dialog
         public bool CancelOnSelection
         {
             [AvailableSince(10, 2)]
+            get
+            {
+                return cancelOnSelect;
+            }
+            [AvailableSince(10, 2)]
             set
             {
-                if (dialog_set_popuplist_cancel_on_selection(handle, value) != BPS.BPS_SUCCESS)
+                if (cancelOnSelect != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_popuplist_cancel_on_selection(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    cancelOnSelect = value;
                 }
             }
         }
@@ -297,11 +338,20 @@ namespace BlackBerry.BPS.Dialog
         public bool ShowAsBasicSelection
         {
             [AvailableSince(10, 2)]
+            get
+            {
+                return basicSelect;
+            }
+            [AvailableSince(10, 2)]
             set
             {
-                if (dialog_set_popuplist_show_basic_selection(handle, value) != BPS.BPS_SUCCESS)
+                if (basicSelect != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_popuplist_show_basic_selection(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    basicSelect = value;
                 }
             }
         }
@@ -320,7 +370,7 @@ namespace BlackBerry.BPS.Dialog
         {
             int count;
             IntPtr ptr;
-            if (PopupListDialog.dialog_event_get_popuplist_selected_indices(ev, out ptr, out count) != BPS.BPS_SUCCESS)
+            if (PopupListDialog.dialog_event_get_popuplist_selected_indices(DangerousGetHandle(), out ptr, out count) != BPS.BPS_SUCCESS)
             {
                 Util.ThrowExceptionForLastErrno();
             }

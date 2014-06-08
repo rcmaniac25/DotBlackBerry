@@ -37,6 +37,13 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string message = null; //XXX
+        private bool hasEmoticons = false; //XXX
+        private bool checkBox = false; //XXX
+        private string checkBoxLabel = null; //XXX
+        private bool checkBoxEnabled = true; //XXX
+        private string icon = null; //XXX
+
         /// <summary>
         /// Create a new alert dialog.
         /// </summary>
@@ -62,53 +69,80 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set the message text of an alert dialog.
+        /// Get or set the message text of an alert dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Message
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return message;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_alert_message_text(handle, value) != BPS.BPS_SUCCESS)
+                if (message != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_alert_message_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    message = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set whether the message text has emoticons.
+        /// Get or set whether the message text has emoticons.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool HasEmoticons
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return hasEmoticons;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_alert_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                if (hasEmoticons != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_alert_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    hasEmoticons = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set the initial state of the check box.
+        /// Get or set the initial state of the check box.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool IsCheckboxChecked
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return checkBox;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_alert_checkbox_checked(handle, value) != BPS.BPS_SUCCESS)
+                if (checkBox != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_alert_checkbox_checked(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    checkBox = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -119,13 +153,22 @@ namespace BlackBerry.BPS.Dialog
         public string CheckboxLabel
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return checkBoxLabel;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_alert_checkbox_label(handle, value) != BPS.BPS_SUCCESS)
+                if (checkBoxLabel != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_alert_checkbox_label(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    checkBoxLabel = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -136,13 +179,22 @@ namespace BlackBerry.BPS.Dialog
         public bool IsCheckboxEnabled
         {
             [AvailableSince(10, 2)]
+            get
+            {
+                return checkBoxEnabled;
+            }
+            [AvailableSince(10, 2)]
             set
             {
-                if (dialog_set_alert_checkbox_enabled(handle, value) != BPS.BPS_SUCCESS)
+                if (checkBoxEnabled != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_alert_checkbox_enabled(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    checkBoxEnabled = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
@@ -153,13 +205,22 @@ namespace BlackBerry.BPS.Dialog
         public string IconPath
         {
             [AvailableSince(10, 2)]
+            get
+            {
+                return icon;
+            }
+            [AvailableSince(10, 2)]
             set
             {
-                if (dialog_set_alert_icon(handle, value) != BPS.BPS_SUCCESS)
+                if (icon != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_alert_icon(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    icon = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
