@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+#if BLACKBERRY_USE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+#else
 using System.Runtime.InteropServices;
+#endif
 
 using Mono.Unix.Native;
 
@@ -205,7 +208,12 @@ namespace BlackBerry
         /// <param name="obj">The object to serialize.</param>
         /// <param name="type">What type of handle handle should be created.</param>
         /// <returns>The data, or IntPtr.Zero if obj is null or an error occurs.</returns>
-        public static IntPtr SerializeToPointer(object obj, GCHandleType type = GCHandleType.Normal)
+        public static IntPtr SerializeToPointer(object obj, GCHandleType type = 
+#if BLACKBERRY_PIN_OBJ_POINTERS
+            GCHandleType.Pinned)
+#else
+            GCHandleType.Normal)
+#endif
         {
             if (obj == null)
             {

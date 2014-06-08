@@ -46,6 +46,15 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public object Data3 { get; private set; }
 
+#if !ObjectPointersPinnedByDefault
+
+        /// <summary>
+        /// Data should be accessible to native code. Otherwise only calls to this library will be able to understand them.
+        /// </summary>
+        public bool DataIsAccessibleToNative { get; set; }
+
+#endif
+
         #region Native Conversion
 
         private struct Payload
@@ -76,9 +85,22 @@ namespace BlackBerry.BPS
             }
 
             var payload = new Payload();
-            payload.data1 = Util.SerializeToPointer(Data1);
-            payload.data2 = Util.SerializeToPointer(Data2);
-            payload.data3 = Util.SerializeToPointer(Data3);
+#if !ObjectPointersPinnedByDefault
+            if (!DataIsAccessibleToNative)
+#endif
+            {
+                payload.data1 = Util.SerializeToPointer(Data1);
+                payload.data2 = Util.SerializeToPointer(Data2);
+                payload.data3 = Util.SerializeToPointer(Data3);
+            }
+#if !ObjectPointersPinnedByDefault
+            else
+            {
+                payload.data1 = Util.SerializeToPointer(Data1, GCHandleType.Pinned);
+                payload.data2 = Util.SerializeToPointer(Data2, GCHandleType.Pinned);
+                payload.data3 = Util.SerializeToPointer(Data3, GCHandleType.Pinned);
+            }
+#endif
 
             var result = Stdlib.malloc((ulong)Marshal.SizeOf(payload));
             if (result == IntPtr.Zero)

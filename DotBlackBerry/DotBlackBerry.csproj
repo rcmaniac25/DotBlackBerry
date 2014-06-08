@@ -68,6 +68,7 @@
     <Compile Include="BPS\ScreenEvent.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
     <Compile Include="ConcurrentSet.cs" />
+    <Compile Include="Internal\Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen\ScreenContext.cs" />
     <Compile Include="Screen\ScreenEvent.cs" />

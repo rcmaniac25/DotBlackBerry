@@ -355,6 +355,14 @@ namespace BlackBerry.BPS.Dialog
         private ObservableCollection<DialogButton> buttons;
         private bool isVisible;
 
+        private int buttonLimit = 2;
+        private VirtualKeyboardEnter keyboardEnter = VirtualKeyboardEnter.Default;
+        private string groupID = null;
+        private InputFlags inputFlags = InputFlags.AutoCorrect | InputFlags.SpellCheck;
+        private bool busy = false;
+        private bool cancelRequired = false;
+        private string title = null; //XXX
+
         internal Dialog()
         {
             handle = IntPtr.Zero;
@@ -486,33 +494,57 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set the title text for a dialog.
+        /// Get or set the title text for a dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Title
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return title;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                Util.GetBPSOrException();
-                if (dialog_set_title_text(handle, value) == BPS.BPS_SUCCESS)
+                if (title != value)
                 {
-                    UpdateDialog();
+                    Util.GetBPSOrException();
+                    if (dialog_set_title_text(handle, value) == BPS.BPS_SUCCESS)
+                    {
+                        title = value;
+                        UpdateDialog();
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Set the window group ID for an application modal dialog.
+        /// Get or set the window group ID for an application modal dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string GroupID
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return groupID;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                Util.GetBPSOrException();
-                dialog_set_group_id(handle, value);
+                if (groupID != value)
+                {
+                    Util.GetBPSOrException();
+                    if (dialog_set_group_id(handle, value) == BPS.BPS_SUCCESS)
+                    {
+                        groupID = value;
+                    }
+                    else
+                    {
+                        //TODO: log error
+                    }
+                }
             }
         }
 
@@ -523,29 +555,47 @@ namespace BlackBerry.BPS.Dialog
         public InputFlags InputFlags
         {
             [AvailableSince(10, 2)]
+            get
+            {
+                return inputFlags;
+            }
+            [AvailableSince(10, 2)]
             set
             {
-                Util.GetBPSOrException();
-                if (dialog_set_input_flags(handle, (int)value) == BPS.BPS_SUCCESS)
+                if (inputFlags != value)
                 {
-                    UpdateDialog();
+                    Util.GetBPSOrException();
+                    if (dialog_set_input_flags(handle, (int)value) == BPS.BPS_SUCCESS)
+                    {
+                        inputFlags = value;
+                        UpdateDialog();
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Set whether to show an activity indicator in a dialog.
+        /// Get or set whether to show an activity indicator in a dialog.
         /// </summary>
         [AvailableSince(10, 2)]
         public bool IsBusy
         {
             [AvailableSince(10, 2)]
+            get
+            {
+                return busy;
+            }
+            [AvailableSince(10, 2)]
             set
             {
-                Util.GetBPSOrException();
-                if (dialog_set_busy(handle, value) == BPS.BPS_SUCCESS)
+                if (busy != value)
                 {
-                    UpdateDialog();
+                    Util.GetBPSOrException();
+                    if (dialog_set_busy(handle, value) == BPS.BPS_SUCCESS)
+                    {
+                        busy = value;
+                        UpdateDialog();
+                    }
                 }
             }
         }
@@ -625,12 +675,21 @@ namespace BlackBerry.BPS.Dialog
         public VirtualKeyboardEnter EnterKey
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return keyboardEnter;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                Util.GetBPSOrException();
-                if (dialog_set_enter_key_type(handle, VirtualKeyboard.EnterKeyToInt(value)) == BPS.BPS_SUCCESS)
+                if (keyboardEnter != value)
                 {
-                    UpdateDialog();
+                    Util.GetBPSOrException();
+                    if (dialog_set_enter_key_type(handle, VirtualKeyboard.EnterKeyToInt(value)) == BPS.BPS_SUCCESS)
+                    {
+                        keyboardEnter = value;
+                        UpdateDialog();
+                    }
                 }
             }
         }
@@ -642,10 +701,19 @@ namespace BlackBerry.BPS.Dialog
         public bool RequiresExplicitCancel
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return cancelRequired;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                Util.GetBPSOrException();
-                dialog_set_cancel_required(handle, value);
+                if (cancelRequired != value)
+                {
+                    Util.GetBPSOrException();
+                    dialog_set_cancel_required(handle, value);
+                    cancelRequired = value;
+                }
             }
         }
 
@@ -750,11 +818,16 @@ namespace BlackBerry.BPS.Dialog
         }
 
         /// <summary>
-        /// Set the button limit for a dialog.
+        /// Get or set the button limit for a dialog.
         /// </summary>
         [AvailableSince(10, 2)]
         public int ButtonLimit
         {
+            [AvailableSince(10, 2)]
+            get
+            {
+                return buttonLimit;
+            }
             [AvailableSince(10, 2)]
             set
             {
@@ -762,9 +835,13 @@ namespace BlackBerry.BPS.Dialog
                 {
                     throw new ArgumentOutOfRangeException("value", "ButtonLimit must be greater then 1");
                 }
-                if (dialog_set_button_limit(handle, value) != BPS.BPS_SUCCESS)
+                if (value != buttonLimit)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_button_limit(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    buttonLimit = value;
                 }
             }
         }

@@ -58,6 +58,9 @@ namespace BlackBerry.BPS.Dialog
 
         #endregion
 
+        private string message = null; //XXX
+        private bool hasEmoticons = false; //XXX
+
         /// <summary>
         /// Create a new login dialog.
         /// </summary>
@@ -83,36 +86,54 @@ namespace BlackBerry.BPS.Dialog
         #region Properties
 
         /// <summary>
-        /// Set the message text of a login dialog.
+        /// Get or set the message text of a login dialog.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Message
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return message;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_message_text(handle, value) != BPS.BPS_SUCCESS)
+                if (message != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_message_text(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    message = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 
         /// <summary>
-        /// Set whether the message text has emoticons.
+        /// Get or set whether the message text has emoticons.
         /// </summary>
         [AvailableSince(10, 0)]
         public bool HasEmoticons
         {
             [AvailableSince(10, 0)]
+            get
+            {
+                return hasEmoticons;
+            }
+            [AvailableSince(10, 0)]
             set
             {
-                if (dialog_set_login_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                if (hasEmoticons != value)
                 {
-                    Util.ThrowExceptionForLastErrno();
+                    if (dialog_set_login_message_has_emoticons(handle, value) != BPS.BPS_SUCCESS)
+                    {
+                        Util.ThrowExceptionForLastErrno();
+                    }
+                    hasEmoticons = value;
+                    UpdateDialog();
                 }
-                UpdateDialog();
             }
         }
 

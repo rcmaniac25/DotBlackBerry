@@ -631,9 +631,17 @@ namespace BlackBerry.BPS
             {
                 Util.ThrowExceptionForLastErrno();
             }
-            if (ev == IntPtr.Zero && timeout != Timeout.InfiniteTimeSpan)
+            if (ev == IntPtr.Zero)
             {
-                throw new TimeoutException();
+                if (timeout != Timeout.InfiniteTimeSpan)
+                {
+#if BLACKBERRY_BPS_EVENT_THROW_TIMEOUT
+                    throw new TimeoutException();
+#else
+                    return null;
+#endif
+                }
+                throw new OperationCanceledException("GetEvent exited without returning an event or an error");
             }
             return new BPSEvent(ev, false);
         }
