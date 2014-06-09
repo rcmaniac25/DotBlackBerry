@@ -67,6 +67,7 @@
     <Compile Include="BPS\Dialog\Toasts.cs" />
     <Compile Include="BPS\LED.cs" />
     <Compile Include="BPS\ScreenEvent.cs" />
+    <Compile Include="BPS\Vibration.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Internal\Config.cs" />
