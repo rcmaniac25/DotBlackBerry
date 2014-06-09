@@ -65,6 +65,7 @@
     <Compile Include="BPS\Dialog\ProgressDialog.cs" />
     <Compile Include="BPS\Dialog\PromptDialog.cs" />
     <Compile Include="BPS\Dialog\Toasts.cs" />
+    <Compile Include="BPS\LED.cs" />
     <Compile Include="BPS\ScreenEvent.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
     <Compile Include="ConcurrentSet.cs" />

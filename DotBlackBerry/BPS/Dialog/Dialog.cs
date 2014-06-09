@@ -353,7 +353,7 @@ namespace BlackBerry.BPS.Dialog
         private int defaultButton;
         private int invalidButtons;
         private ObservableCollection<DialogButton> buttons;
-        private bool isVisible;
+        private bool isVisible = false;
 
         private int buttonLimit = 2;
         private VirtualKeyboardEnter keyboardEnter = VirtualKeyboardEnter.Default;
@@ -374,19 +374,17 @@ namespace BlackBerry.BPS.Dialog
             }
             dialogs.Add(handle, this);
             setupButtons();
-            isVisible = false;
         }
 
         internal Dialog(IntPtr ptr)
         {
-            handle = ptr;
             Util.GetBPSOrException();
+            handle = ptr;
             if (handle == IntPtr.Zero)
             {
-                throw new InvalidOperationException("Could not create dialog");
+                throw new InvalidOperationException("Invalid dialog");
             }
             setupButtons();
-            isVisible = false;
             // Don't add to dialog list, this is probably coming from an event, meaning it's already in the list.
         }
 

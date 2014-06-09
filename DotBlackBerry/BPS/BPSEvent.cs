@@ -326,11 +326,7 @@ namespace BlackBerry.BPS
         /// Get the internal handle of the BPS event.
         /// </summary>
         /// <returns>The internal handle of the BPS event.</returns>
-#if BLACKBERRY_INTERNAL_FUNCTIONS
-        public IntPtr DangerousGetHandle()
-#else
         internal IntPtr DangerousGetHandle()
-#endif
         {
             if (handle == IntPtr.Zero)
             {

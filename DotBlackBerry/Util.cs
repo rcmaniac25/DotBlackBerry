@@ -12,7 +12,7 @@ using Mono.Unix.Native;
 namespace BlackBerry
 {
     /// <summary>
-    /// Simple utility class for common operations
+    /// Utility class for common operations
     /// </summary>
     internal class Util
     {
