@@ -60,11 +60,8 @@ namespace BlackBerry.BPS
     {
         private string id;
 
-        internal LEDInstance(LEDColor color, Guid id, int blinkCount)
+        internal LEDInstance(Guid id)
         {
-            this.Color = color;
-            this.ContinuousBlinking = blinkCount == 0;
-            this.BlinkCount = blinkCount;
             this.id = id.ToString();
         }
 
@@ -223,7 +220,7 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 0)]
         public static LEDInstance Flash(LEDColor color, int blinkCount = 0)
         {
-            var instance = new LEDInstance(color, Guid.NewGuid(), blinkCount);
+            var instance = new LEDInstance(Guid.NewGuid());
             if (!instance.Update(color, blinkCount))
             {
                 Util.ThrowExceptionForLastErrno();

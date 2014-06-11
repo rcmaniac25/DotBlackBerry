@@ -353,6 +353,7 @@ namespace BlackBerry.BPS.Dialog
         private int defaultButton;
         private int invalidButtons;
         private ObservableCollection<DialogButton> buttons;
+
         private bool isVisible = false;
 
         private int buttonLimit = 2;
@@ -388,6 +389,14 @@ namespace BlackBerry.BPS.Dialog
             // Don't add to dialog list, this is probably coming from an event, meaning it's already in the list.
         }
 
+        /// <summary>
+        /// Finalize a Dialog instance.
+        /// </summary>
+        ~Dialog()
+        {
+            Dispose(false);
+        }
+
         internal abstract void CreateDialog();
 
         internal virtual DialogEvent GetEventForDialog(IntPtr ev)
@@ -410,21 +419,37 @@ namespace BlackBerry.BPS.Dialog
             {
                 throw new ObjectDisposedException("Dialog");
             }
-            if (dialog_destroy(handle) != BPS.BPS_SUCCESS)
-            {
-                Util.ThrowExceptionForLastErrno();
-            }
-            dialogs.Remove(handle);
-            handle = IntPtr.Zero;
-            isVisible = false;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            // Cleanup buttons so nothing gets screwed up if the button is reused
-            buttons.CollectionChanged -= buttons_CollectionChanged;
-            foreach (var button in buttons)
+        /// <summary>
+        /// Dispose the Dialog instance.
+        /// </summary>
+        /// <param name="disposing">true if Dispose was called, false if the finalizer was triggered.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (handle != IntPtr.Zero)
             {
-                button.PropertyChanged -= buttonItem_PropertyChanged;
+                if (dialog_destroy(handle) != BPS.BPS_SUCCESS && disposing)
+                {
+                    Util.ThrowExceptionForLastErrno();
+                }
+                dialogs.Remove(handle);
+                handle = IntPtr.Zero;
+                isVisible = false;
+
+                if (disposing)
+                {
+                    // Cleanup buttons so nothing gets screwed up if the button is reused
+                    buttons.CollectionChanged -= buttons_CollectionChanged;
+                    foreach (var button in buttons)
+                    {
+                        button.PropertyChanged -= buttonItem_PropertyChanged;
+                    }
+                    buttons.Clear();
+                }
             }
-            buttons.Clear();
         }
 
         #region BPS

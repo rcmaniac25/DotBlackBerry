@@ -122,6 +122,14 @@ namespace BlackBerry.BPS
             }
         }
 
+        /// <summary>
+        /// Finalize DeviceInfo instance.
+        /// </summary>
+        ~DeviceInfo()
+        {
+            Dispose(false);
+        }
+
         #region Properties
 
         // Public due to how often this gets used by .BlackBerry and potentially by programs determining what they can use.
@@ -338,8 +346,17 @@ namespace BlackBerry.BPS
             {
                 throw new ObjectDisposedException("DeviceInfo");
             }
-            deviceinfo_free_details(ref handle);
-            handle = IntPtr.Zero;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                deviceinfo_free_details(ref handle);
+                handle = IntPtr.Zero;
+            }
         }
 
         #region Functions

@@ -178,6 +178,17 @@ namespace BlackBerry.BPS
         }
 
         /// <summary>
+        /// Finalize BPSEvent instance.
+        /// </summary>
+        ~BPSEvent()
+        {
+            if (IsDisposable)
+            {
+                Dispose(false);
+            }
+        }
+
+        /// <summary>
         /// Create an event.
         /// </summary>
         /// <param name="domain">The domain of the event.</param>
@@ -214,6 +225,7 @@ namespace BlackBerry.BPS
         }
 
         private BPSEvent(int domain, uint code, BPSEventPayload payload, Action<BPSEvent> completionFunction, bool recordCompletion)
+            : this(IntPtr.Zero, true)
         {
             if (domain < 0 || domain > BPS_EVENT_DOMAIN_MAX)
             {
@@ -349,8 +361,21 @@ namespace BlackBerry.BPS
             {
                 throw new ObjectDisposedException("BPSEvent");
             }
-            bps_event_destroy(handle);
-            handle = IntPtr.Zero;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose the BPSEvent instance.
+        /// </summary>
+        /// <param name="disposing">true if Dispose was called, false if the finalizer was triggered.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                bps_event_destroy(handle);
+                handle = IntPtr.Zero;
+            }
         }
     }
 }

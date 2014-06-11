@@ -4,15 +4,21 @@
         <id>rebuild.dot.blackberry</id>
         <version>$version$</version>
         <authors>Vincent Simonetti</authors>
+        <owners>Vincent Simonetti</owners>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/rcmaniac25/DotBlackBerry</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>BlackBerry 10 core interop library for use with Mono.</description>
         <summary>Extensive array of APIs for interacting with BlackBerry 10.</summary>
         <releaseNotes>Initial Release</releaseNotes>
-        <tags>BlackBerry Mono</tags>
+        <tags>BlackBerry Mono MonoBerry</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System" />
+            <frameworkAssembly assemblyName="System.Core" />
+            <frameworkAssembly assemblyName="System.ServiceModel" />
+        </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="bin\Release\DotBlackBerry.dll" target="lib\net45\DotBlackBerry.dll" />
+        <file src="bin\Release\DotBlackBerry.dll" target="lib\net45" />
     </files>
 </package>

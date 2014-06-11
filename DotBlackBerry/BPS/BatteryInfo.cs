@@ -236,6 +236,14 @@ namespace BlackBerry.BPS
             this.isDisposable = isDisposable;
         }
 
+        /// <summary>
+        /// Finalize BatteryInfo instance.
+        /// </summary>
+        ~BatteryInfo()
+        {
+            Dispose(false);
+        }
+
         #region Inner Classes
 
         #region BatteryData
@@ -1109,8 +1117,20 @@ namespace BlackBerry.BPS
             {
                 throw new ObjectDisposedException("BatteryInfo");
             }
-            battery_free_info(ref handle);
-            handle = IntPtr.Zero;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                if (this.isDisposable)
+                {
+                    battery_free_info(ref handle);
+                }
+                handle = IntPtr.Zero;
+            }
         }
 
         #region BPS

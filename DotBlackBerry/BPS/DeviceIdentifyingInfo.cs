@@ -53,6 +53,14 @@ namespace BlackBerry.BPS
             }
         }
 
+        /// <summary>
+        /// Finalize DeviceIdentifyingInfo instance.
+        /// </summary>
+        ~DeviceIdentifyingInfo()
+        {
+            Dispose(false);
+        }
+
         #region Properties
 
         /// <summary>
@@ -175,8 +183,17 @@ namespace BlackBerry.BPS
             {
                 throw new ObjectDisposedException("DeviceInfo");
             }
-            deviceinfo_free_identifying_details(ref handle);
-            handle = IntPtr.Zero;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                deviceinfo_free_identifying_details(ref handle);
+                handle = IntPtr.Zero;
+            }
         }
     }
 }

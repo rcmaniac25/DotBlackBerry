@@ -276,6 +276,7 @@ namespace BlackBerry.BPS
                 }
                 bps_shutdown();
             }
+            // Don't call GC.SuppressFinalize as this works off a reference count-style methodology
         }
 
         private static void CleanupPointers(IntPtr ignore)
