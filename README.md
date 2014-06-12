@@ -38,6 +38,7 @@ Requirements:
 * Install [MonoBerry tools for Visual Studio](http://visualstudiogallery.msdn.microsoft.com/b4803586-b446-4df1-8254-978f00ceb52d) (Visual Studio 2012 only right now).
 
 Steps:
+
 1. [Create a MonoBerry project](http://cup-coffe.blogspot.com/2013/06/hello-world-with-monoberry.html), steps 1 and 2, though you don't need to setup the Simulator. Change the Target Framework to .Net 4.5.
 2. Get .BlackBerry. Right now, that means building the libs. Later it would mean using `Install-Package`
 3. Modify monoberry-descriptor.xml to point to the proper libraries. (see below)
