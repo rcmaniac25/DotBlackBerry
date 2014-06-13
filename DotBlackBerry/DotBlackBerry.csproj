@@ -66,9 +66,12 @@
     <Compile Include="BPS\Dialog\PromptDialog.cs" />
     <Compile Include="BPS\Dialog\Toasts.cs" />
     <Compile Include="BPS\LED.cs" />
+    <Compile Include="BPS\ScreenCapture.cs" />
     <Compile Include="BPS\ScreenEvent.cs" />
+    <Compile Include="BPS\ScreenInputGuard.cs" />
     <Compile Include="BPS\Vibration.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
+    <Compile Include="Camera\CameraException.cs" />
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Internal\Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

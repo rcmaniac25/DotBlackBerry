@@ -86,11 +86,54 @@ namespace BlackBerry
         #region Errno
 
         /// <summary>
-        /// Get the last errno and throw an exception for it.
+        /// Get the exception to throw for errno.
         /// </summary>
-        public static void ThrowExceptionForLastErrno()
+        /// <param name="errno">The errno to get an exception for.</param>
+        /// <param name="throwForGeneric">Throw exception for general, Mono supported exceptions.</param>
+        /// <returns>The exeption to throw, or null if there was no exception.</returns>
+        public static Exception GetExceptionForErrno(Errno errno, bool throwForGeneric = false)
         {
-            ThrowExceptionForErrno(Stdlib.GetLastError());
+            if (NativeConvert.FromErrno(errno) == 0)
+            {
+                return null;
+            }
+            switch (errno)
+            {
+                case Errno.ENOMEM:
+                    return new OutOfMemoryException();
+                case Errno.EEXIST:
+                    return new IOException("File already exists", NativeConvert.FromErrno(errno));
+                case Errno.EMFILE:
+                    return new IOException("Too many files open", NativeConvert.FromErrno(errno));
+                case Errno.ENOTTY:
+                    return new IOException("Inappropriate I/O control operation", NativeConvert.FromErrno(errno));
+                case Errno.EFBIG:
+                    return new IOException("File too large", NativeConvert.FromErrno(errno));
+                case Errno.EPIPE:
+                    return new PipeException("Broken pipe", NativeConvert.FromErrno(errno));
+                case ((Errno)47): //ECANCELED
+                    return new OperationCanceledException();
+                case ((Errno)48): //ENOTSUP
+                    return new NotSupportedException();
+            }
+            if (throwForGeneric)
+            {
+                Mono.Unix.UnixMarshal.ThrowExceptionForError(errno);
+                return null; //Will never reach here
+            }
+            else
+            {
+                // Nasty hack to actually get exception
+                try
+                {
+                    Mono.Unix.UnixMarshal.ThrowExceptionForError(errno);
+                    return new InvalidOperationException(Mono.Unix.UnixMarshal.GetErrorDescription(errno));
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
+            }
         }
 
         /// <summary>
@@ -100,7 +143,8 @@ namespace BlackBerry
         /// <param name="logNoError">If there is no error, log that this was called (meaning a failure occured) but that no error existed.</param>
         public static void ThrowExceptionForErrno(Errno errno, bool logNoError = true)
         {
-            if (NativeConvert.FromErrno(errno) == 0)
+            var err = GetExceptionForErrno(errno, true);
+            if (err == null)
             {
                 if (logNoError)
                 {
@@ -108,26 +152,15 @@ namespace BlackBerry
                 }
                 return;
             }
-            switch (errno)
-            {
-                case Errno.ENOMEM:
-                    throw new OutOfMemoryException();
-                case Errno.EEXIST:
-                    throw new IOException("File already exists", NativeConvert.FromErrno(errno));
-                case Errno.EMFILE:
-                    throw new IOException("Too many files open", NativeConvert.FromErrno(errno));
-                case Errno.ENOTTY:
-                    throw new IOException("Inappropriate I/O control operation", NativeConvert.FromErrno(errno));
-                case Errno.EFBIG:
-                    throw new IOException("File too large", NativeConvert.FromErrno(errno));
-                case Errno.EPIPE:
-                    throw new PipeException("Broken pipe", NativeConvert.FromErrno(errno));
-                case ((Errno)47): //ECANCELED
-                    throw new OperationCanceledException();
-                case ((Errno)48): //ENOTSUP
-                    throw new NotSupportedException();
-            }
-            Mono.Unix.UnixMarshal.ThrowExceptionForError(errno);
+            throw err;
+        }
+
+        /// <summary>
+        /// Get the last errno and throw an exception for it.
+        /// </summary>
+        public static void ThrowExceptionForLastErrno()
+        {
+            ThrowExceptionForErrno(Stdlib.GetLastError());
         }
 
         #endregion
