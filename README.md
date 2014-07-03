@@ -32,33 +32,7 @@ Usage
 
 Right now, usage isn't the best.
 
-Requirements:
-* Mono (as you need it's runtime libs). Keep the version close to 3.2.4 to make sure the runtime isn't out of date with the BCL, potentially causing issues later on.
-* Download the latest [Release](https://github.com/roblillack/monoberry/releases) from MonoBerry
-* Install [MonoBerry tools for Visual Studio](http://visualstudiogallery.msdn.microsoft.com/b4803586-b446-4df1-8254-978f00ceb52d) (Visual Studio 2012 only right now).
-
-Steps:
-
-1. [Create a MonoBerry project](http://cup-coffe.blogspot.com/2013/06/hello-world-with-monoberry.html), steps 1 and 2, though you don't need to setup the Simulator. Change the Target Framework to .Net 4.5.
-2. Get .BlackBerry. Right now, that means building the libs. Later it would mean using `Install-Package`
-3. Modify monoberry-descriptor.xml to point to the proper libraries. (see below)
-4. Follow [step 5](http://cup-coffe.blogspot.com/2013/06/hello-world-with-monoberry.html)
-
-monoberry-descriptor changes
---------
-
-It is expected that you have Mono installed and have downloaded MonoBerry.
-
-Section #2: Check the executable/libraries that you have created, specifically it's dependencies. List each runtime dependency (as opposed to downloaded packages):
-* For mscorlib, link to {MonoBerry}/target/lib/mscorlib.dll.
-* For all other libs, link to the Mono lib (for .Net 4.5) for the source.
-* Change all link references from 4.0 to 4.5 (since the build should be for .Net 4.5)  
-
-Section #3: Change the runtime links:
-* mono should point to {MonoBerry}/target/target/armle-v7/bin/mono
-* libgdiplus.so.1 should point to {MonoBerry}/target/target/armle-v7/lib/libgdiplus.so.1  
-
-Section #4: Change resources and binaries. While it currently points to your application's Debug directory, if you are missing additional dependencies, you may need to add additional asset copies.
+See [Wiki](https://github.com/rcmaniac25/DotBlackBerry/wiki/Home)
 
 Todo
 ========

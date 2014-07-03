@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<qnx xmlns="http://www.qnx.com/schemas/application/1.0">
+  <id>{app ID}</id>
+  <name>{app name}</name>
+  <versionNumber>{app version}</versionNumber>
+  <buildId>{app build ID}</buildId>
+  <description>{app descirption}</description>
+  <author>{author}</author>
+  <authorId>{debug token ID, remove for release version}</authorId>
+  <initialWindow>
+    <systemChrome>none</systemChrome>
+    <transparent>false</transparent>
+  </initialWindow>
+  <!-- We'll setup MonoBerry in app/native/monoberry -->
+  <!--  1. Tell the runtime, where the libs are -->
+  <env var="MONO_PATH" value="app/native/monoberry/lib" />
+  <env var="MONO_LOG_LEVEL" value="debug" />
+  <env var="LD_LIBRARY_PATH" value="app/native/lib" />
+  <!--  2. Include any needed libs -->
+  <!--  .NET 4.5 Compatible Assemblies -->
+  <asset path="{monoberry path}\target\lib\mscorlib.dll">monoberry/lib/mono/4.5/mscorlib.dll</asset>
+  <asset path="{mono path}\lib\mono\4.5\System.dll">monoberry/lib/mono/4.5/System.dll</asset>
+  <asset path="{mono path}\lib\mono\4.5\System.Drawing.dll">monoberry/lib/mono/4.5/System.Drawing.dll</asset>
+  <!--  3. Include the (platform dependent) runtime and use it as entry point -->
+  <asset path="{monoberry path}\target\target\armle-v7\bin\mono" entry="true" type="Qnx/Elf">monoberry/bin/mono</asset>
+  <asset path="{monoberry path}\target\target\armle-v7\lib\libgdiplus.so.0" type="Qnx/Elf">bin/libgdiplus.so</asset>
+  <!--  4. Include our own (platform independent) code -->
+  <asset path="bin/Debug">bin</asset>
+  <!--  5. Tell the Mono runtime to run our code. -->
+  <arg>app/native/bin/{app executable name}.exe</arg>
+  <!-- Icon location 
+  <asset path="Resources/ApplicationIcon.png">icon.png</asset>
+  <icon>
+    <image>icon.png</image>
+  </icon>
+  -->
+  <!--  The splash screen that will appear when your application is launching. -->
+  <!-- <splashscreen></splashscreen> -->
+  <!-- Request permission to execute native code.  Required for native applications. -->
+  <action system="true">run_native</action>
+  <!--  The permissions requested by your application. -->
+</qnx>
