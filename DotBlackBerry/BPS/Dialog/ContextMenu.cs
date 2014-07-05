@@ -113,10 +113,10 @@ namespace BlackBerry.BPS.Dialog
         private static extern int dialog_create_context_menu(out IntPtr dialog);
 
         [DllImport("bps")]
-        private static extern int dialog_context_menu_add_button(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible, int icon);
+        private static extern int dialog_context_menu_add_button(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible, ContextMenuIcon icon);
 
         [DllImport("bps")]
-        private static extern int dialog_context_menu_update_button(IntPtr dialog, int index, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible, int icon);
+        private static extern int dialog_context_menu_update_button(IntPtr dialog, int index, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible, ContextMenuIcon icon);
 
         #endregion
 
@@ -133,13 +133,13 @@ namespace BlackBerry.BPS.Dialog
         internal override bool AddButton(DialogButton button)
         {
             var icon = button is ContentMenuButton ? ((ContentMenuButton)button).Icon : ContextMenuIcon.NoIcon;
-            return dialog_context_menu_add_button(handle, button.Label, button.Enabled, IntPtr.Zero, button.Visible, (int)icon) == BPS.BPS_SUCCESS;
+            return dialog_context_menu_add_button(handle, button.Label, button.Enabled, IntPtr.Zero, button.Visible, icon) == BPS.BPS_SUCCESS;
         }
 
         internal override bool ReplaceButton(int index, DialogButton newButton)
         {
             var icon = newButton is ContentMenuButton ? ((ContentMenuButton)newButton).Icon : ContextMenuIcon.NoIcon;
-            return dialog_context_menu_update_button(handle, index, newButton.Label, newButton.Enabled, IntPtr.Zero, newButton.Visible, (int)icon) == BPS.BPS_SUCCESS;
+            return dialog_context_menu_update_button(handle, index, newButton.Label, newButton.Enabled, IntPtr.Zero, newButton.Visible, icon) == BPS.BPS_SUCCESS;
         }
 
         internal override bool UpdateButtonProperty(int index, DialogButton button, string property)
@@ -147,14 +147,14 @@ namespace BlackBerry.BPS.Dialog
             switch (property)
             {
                 case "Label":
-                    return dialog_context_menu_update_button(handle, index, button.Label, button.Enabled, IntPtr.Zero, button.Visible, (int)ContextMenuIcon.KeepIcon) == BPS.BPS_SUCCESS;
+                    return dialog_context_menu_update_button(handle, index, button.Label, button.Enabled, IntPtr.Zero, button.Visible, ContextMenuIcon.KeepIcon) == BPS.BPS_SUCCESS;
                 case "Enabled":
                 case "Visible":
-                    return dialog_context_menu_update_button(handle, index, null, button.Enabled, IntPtr.Zero, button.Visible, (int)ContextMenuIcon.KeepIcon) == BPS.BPS_SUCCESS;
+                    return dialog_context_menu_update_button(handle, index, null, button.Enabled, IntPtr.Zero, button.Visible, ContextMenuIcon.KeepIcon) == BPS.BPS_SUCCESS;
                 case "Context":
                     return true; // We don't actually set the context pointer, so don't worry if it changes.
                 case "Icon":
-                    return dialog_context_menu_update_button(handle, index, null, button.Enabled, IntPtr.Zero, button.Visible, (int)((ContentMenuButton)button).Icon) == BPS.BPS_SUCCESS;
+                    return dialog_context_menu_update_button(handle, index, null, button.Enabled, IntPtr.Zero, button.Visible, ((ContentMenuButton)button).Icon) == BPS.BPS_SUCCESS;
                 default:
                     throw new ArgumentException(string.Format("Unknown property: {0}", property));
             }

@@ -55,7 +55,7 @@ namespace BlackBerry.BPS
     /// <summary>
     /// A running instance of the LED.
     /// </summary>
-    [AvailableSince(10, 0)]
+    [AvailableSince(10, 0), RequiredPermission(Permission.LED)]
     public sealed class LEDInstance
     {
         private string id;
@@ -106,7 +106,7 @@ namespace BlackBerry.BPS
             {
                 throw new ArgumentOutOfRangeException("blinkCount", "0 <= blinkCount");
             }
-            var success = LED.led_request_color(id, (int)color, blinkCount) == BPS.BPS_SUCCESS;
+            var success = LED.led_request_color(id, color, blinkCount) == BPS.BPS_SUCCESS;
             if (success)
             {
                 Color = color;
@@ -138,7 +138,7 @@ namespace BlackBerry.BPS
         private static extern int led_event_get_rgb(IntPtr ev, out bool red, out bool green, out bool blue);
 
         [DllImport("bps")]
-        internal static extern int led_request_color([MarshalAs(UnmanagedType.LPStr)]string id, int color, int blink_count);
+        internal static extern int led_request_color([MarshalAs(UnmanagedType.LPStr)]string id, LEDColor color, int blink_count);
 
         [DllImport("bps")]
         internal static extern int led_cancel([MarshalAs(UnmanagedType.LPStr)]string id);

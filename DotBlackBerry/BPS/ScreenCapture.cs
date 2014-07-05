@@ -31,13 +31,13 @@ namespace BlackBerry.BPS
     /// <summary>
     /// Functions for taking a snapshot of the display.
     /// </summary>
-    [AvailableSince(10, 2)]
+    [AvailableSince(10, 2), RequiredPermission(Permission.CaptureScreen)]
     public static class ScreenCapture
     {
         #region PInvoke
 
         [DllImport("bps")]
-        private static extern int screencapture_grab([MarshalAs(UnmanagedType.LPStr)]string filename, int format, out IntPtr result);
+        private static extern int screencapture_grab([MarshalAs(UnmanagedType.LPStr)]string filename, CaptureFormat format, out IntPtr result);
 
         [DllImport("bps")]
         private static extern int screencapture_result_get_error_code(IntPtr result);
@@ -59,7 +59,7 @@ namespace BlackBerry.BPS
         /// <param name="filename">If null, the screenshot will be stored in the camera roll and the file name will be automatically generated. Otherwise, <paramref name="filename"/> will be used as the file name.</param>
         /// <param name="format">The format of the image.</param>
         /// <returns>The filename of the saved screenshot.</returns>
-        [AvailableSince(10, 2)]
+        [AvailableSince(10, 2), RequiredPermission(Permission.CaptureScreen)]
         public static string Capture(string filename = null, CaptureFormat format = CaptureFormat.PNG)
         {
             if (format < CaptureFormat.Filename || format > CaptureFormat.PNG)
@@ -67,7 +67,7 @@ namespace BlackBerry.BPS
                 throw new ArgumentOutOfRangeException("format", "Not a supported capture format");
             }
             IntPtr result;
-            if (screencapture_grab(filename, (int)format, out result) != BPS.BPS_SUCCESS)
+            if (screencapture_grab(filename, format, out result) != BPS.BPS_SUCCESS)
             {
                 Errno errno = Stdlib.GetLastError();
                 if (errno == Errno.ENOMEM)

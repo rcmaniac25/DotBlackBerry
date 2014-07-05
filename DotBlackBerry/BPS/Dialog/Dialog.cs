@@ -293,7 +293,7 @@ namespace BlackBerry.BPS.Dialog
         private static extern int dialog_set_group_id(IntPtr ev, [MarshalAs(UnmanagedType.LPStr)]string group_id);
 
         [DllImport("bps")]
-        private static extern int dialog_set_input_flags(IntPtr dialog, int input_flags);
+        private static extern int dialog_set_input_flags(IntPtr dialog, InputFlags input_flags);
 
         [DllImport("bps")]
         private static extern int dialog_set_busy(IntPtr dialog, bool busy);
@@ -593,7 +593,7 @@ namespace BlackBerry.BPS.Dialog
                 if (inputFlags != value)
                 {
                     Util.GetBPSOrException();
-                    if (dialog_set_input_flags(handle, (int)value) == BPS.BPS_SUCCESS)
+                    if (dialog_set_input_flags(handle, value) == BPS.BPS_SUCCESS)
                     {
                         inputFlags = value;
                         UpdateDialog();

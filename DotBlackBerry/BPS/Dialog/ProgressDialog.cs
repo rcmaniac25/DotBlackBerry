@@ -50,7 +50,7 @@ namespace BlackBerry.BPS.Dialog
         private static extern int dialog_set_progress_icon(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string path);
 
         [DllImport("bps")]
-        private static extern int dialog_set_progress_state(IntPtr dialog, int state);
+        private static extern int dialog_set_progress_state(IntPtr dialog, ProgressState state);
 
         [DllImport("bps")]
         private static extern int dialog_set_progress_left_details(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
@@ -211,7 +211,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (state != value)
                 {
-                    if (dialog_set_progress_state(handle, (int)value) != BPS.BPS_SUCCESS)
+                    if (dialog_set_progress_state(handle, value) != BPS.BPS_SUCCESS)
                     {
                         Util.ThrowExceptionForLastErrno();
                     }

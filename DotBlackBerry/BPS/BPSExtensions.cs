@@ -203,5 +203,17 @@ namespace BlackBerry.BPS
         }
 
         #endregion
+
+        /// <summary>
+        /// Get the code of an event.
+        /// </summary>
+        /// <typeparam name="T">The enumeration type to cast the code to.</typeparam>
+        /// <param name="ev">The event to get the code from.</param>
+        /// <returns>The code, cast as the enumeration type.</returns>
+        [AvailableSince(10, 0)]
+        public static T CodeAs<T>(this BPSEvent ev)
+        {
+            return (T)Enum.ToObject(typeof(T), ev.Code);
+        }
     }
 }

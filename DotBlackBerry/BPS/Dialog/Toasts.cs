@@ -93,7 +93,7 @@ namespace BlackBerry.BPS.Dialog
         private static extern int dialog_set_toast_message_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
         [DllImport("bps")]
-        private static extern int dialog_set_toast_position(IntPtr dialog, int position);
+        private static extern int dialog_set_toast_position(IntPtr dialog, ToastPosition position);
 
         #endregion
 
@@ -161,7 +161,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (position != value)
                 {
-                    if (dialog_set_toast_position(handle, (int)value) != BPS.BPS_SUCCESS)
+                    if (dialog_set_toast_position(handle, value) != BPS.BPS_SUCCESS)
                     {
                         Util.ThrowExceptionForLastErrno();
                     }
@@ -256,7 +256,7 @@ namespace BlackBerry.BPS.Dialog
         private static extern int dialog_create_progress_toast(out IntPtr dialog);
 
         [DllImport("bps")]
-        private static extern int dialog_set_progress_toast_state(IntPtr dialog, int state);
+        private static extern int dialog_set_progress_toast_state(IntPtr dialog, ProgressState state);
 
         [DllImport("bps")]
         private static extern int dialog_set_progress_toast_level(IntPtr dialog, int progress);
@@ -305,7 +305,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (state != value)
                 {
-                    if (dialog_set_progress_toast_state(handle, (int)value) != BPS.BPS_SUCCESS)
+                    if (dialog_set_progress_toast_state(handle, value) != BPS.BPS_SUCCESS)
                     {
                         Util.ThrowExceptionForLastErrno();
                     }
@@ -399,10 +399,10 @@ namespace BlackBerry.BPS.Dialog
         private static extern int dialog_set_volume_toast_level(IntPtr dialog, int level);
 
         [DllImport("bps")]
-        private static extern int dialog_set_volume_toast_direction(IntPtr dialog, int direction);
+        private static extern int dialog_set_volume_toast_direction(IntPtr dialog, VolumeDirection direction);
 
         [DllImport("bps")]
-        private static extern int dialog_set_volume_toast_control(IntPtr dialog, int control);
+        private static extern int dialog_set_volume_toast_control(IntPtr dialog, VolumeControlType control);
 
         #endregion
 
@@ -525,7 +525,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (direction != value)
                 {
-                    if (dialog_set_volume_toast_direction(handle, (int)value) != BPS.BPS_SUCCESS)
+                    if (dialog_set_volume_toast_direction(handle, value) != BPS.BPS_SUCCESS)
                     {
                         Util.ThrowExceptionForLastErrno();
                     }
@@ -551,7 +551,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (type != value)
                 {
-                    if (dialog_set_volume_toast_control(handle, (int)value) != BPS.BPS_SUCCESS)
+                    if (dialog_set_volume_toast_control(handle, value) != BPS.BPS_SUCCESS)
                     {
                         Util.ThrowExceptionForLastErrno();
                     }

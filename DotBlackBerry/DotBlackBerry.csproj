@@ -66,6 +66,7 @@
     <Compile Include="BPS\Dialog\PromptDialog.cs" />
     <Compile Include="BPS\Dialog\Toasts.cs" />
     <Compile Include="BPS\LED.cs" />
+    <Compile Include="BPS\Navigator.cs" />
     <Compile Include="BPS\ScreenCapture.cs" />
     <Compile Include="BPS\ScreenEvent.cs" />
     <Compile Include="BPS\ScreenInputGuard.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Internal\Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequiredPermissionAttribute.cs" />
     <Compile Include="Screen\ScreenContext.cs" />
     <Compile Include="Screen\ScreenEvent.cs" />
     <Compile Include="Util.cs" />

@@ -6,7 +6,7 @@ namespace BlackBerry.BPS
     /// <summary>
     /// Device identifying information.
     /// </summary>
-    [AvailableSince(10, 0)]
+    [AvailableSince(10, 0), RequiredPermission(Permission.DeviceIdentifyingInformation)]
     public sealed class DeviceIdentifyingInfo : IDisposable
     {
         #region PInvoke

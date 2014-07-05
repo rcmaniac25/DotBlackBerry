@@ -58,19 +58,19 @@ namespace BlackBerry.BPS.Dialog
         private static extern int dialog_set_notification_start_date_time(IntPtr dialog, long time);
 
         [DllImport("bps")]
-        private static extern int dialog_set_notification_start_date_format(IntPtr dialog, int date_format, int time_format, int week_format);
+        private static extern int dialog_set_notification_start_date_format(IntPtr dialog, DateTimeFormat date_format, DateTimeFormat time_format, DateTimeFormat week_format);
 
         [DllImport("bps")]
-        private static extern int dialog_set_notification_start_date_format_elapsed(IntPtr dialog, int elapsed_format);
+        private static extern int dialog_set_notification_start_date_format_elapsed(IntPtr dialog, DateTimeFormat elapsed_format);
 
         [DllImport("bps")]
         private static extern int dialog_set_notification_end_date_time(IntPtr dialog, long time);
 
         [DllImport("bps")]
-        private static extern int dialog_set_notification_end_date_format(IntPtr dialog, int date_format, int time_format, int week_format);
+        private static extern int dialog_set_notification_end_date_format(IntPtr dialog, DateTimeFormat date_format, DateTimeFormat time_format, DateTimeFormat week_format);
 
         [DllImport("bps")]
-        private static extern int dialog_set_notification_end_date_format_elapsed(IntPtr dialog, int elapsed_format);
+        private static extern int dialog_set_notification_end_date_format_elapsed(IntPtr dialog, DateTimeFormat elapsed_format);
 
         [DllImport("bps")]
         private static extern int dialog_set_notification_content_locked(IntPtr dialog, bool locked);
@@ -282,7 +282,7 @@ namespace BlackBerry.BPS.Dialog
         [AvailableSince(10, 0)]
         public bool SetStartDateTime(DateTime dateTime, DateTimeFormat date, DateTimeFormat time, DateTimeFormat week = DateTimeFormat.None)
         {
-            if (dialog_set_notification_start_date_format(handle, (int)date, (int)time, (int)week) != BPS.BPS_SUCCESS && 
+            if (dialog_set_notification_start_date_format(handle, date, time, week) != BPS.BPS_SUCCESS && 
                 dialog_set_notification_start_date_time(handle, (long)(dateTime.ToUniversalTime() - GetEpoch()).TotalMilliseconds) != BPS.BPS_SUCCESS)
             {
                 return false;
@@ -299,7 +299,7 @@ namespace BlackBerry.BPS.Dialog
         [AvailableSince(10, 0)]
         public bool SetStartElapsedTime(TimeSpan timeSpan, DateTimeFormat format)
         {
-            if (dialog_set_notification_start_date_format_elapsed(handle, (int)format) != BPS.BPS_SUCCESS && 
+            if (dialog_set_notification_start_date_format_elapsed(handle, format) != BPS.BPS_SUCCESS && 
                 dialog_set_notification_start_date_time(handle, (long)timeSpan.TotalMilliseconds) != BPS.BPS_SUCCESS)
             {
                 return false;
@@ -318,7 +318,7 @@ namespace BlackBerry.BPS.Dialog
         [AvailableSince(10, 0)]
         public bool SetEndDateTime(DateTime dateTime, DateTimeFormat date, DateTimeFormat time, DateTimeFormat week = DateTimeFormat.None)
         {
-            if (dialog_set_notification_end_date_format(handle, (int)date, (int)time, (int)week) != BPS.BPS_SUCCESS &&
+            if (dialog_set_notification_end_date_format(handle, date, time, week) != BPS.BPS_SUCCESS &&
                 dialog_set_notification_end_date_time(handle, (long)(dateTime.ToUniversalTime() - GetEpoch()).TotalMilliseconds) != BPS.BPS_SUCCESS)
             {
                 return false;
@@ -335,7 +335,7 @@ namespace BlackBerry.BPS.Dialog
         [AvailableSince(10, 0)]
         public bool SetEndElapsedTime(TimeSpan timeSpan, DateTimeFormat format)
         {
-            if (dialog_set_notification_end_date_format_elapsed(handle, (int)format) != BPS.BPS_SUCCESS &&
+            if (dialog_set_notification_end_date_format_elapsed(handle, format) != BPS.BPS_SUCCESS &&
                 dialog_set_notification_end_date_time(handle, (long)timeSpan.TotalMilliseconds) != BPS.BPS_SUCCESS)
             {
                 return false;

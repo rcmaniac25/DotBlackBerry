@@ -121,7 +121,7 @@ namespace BlackBerry.BPS
         private static extern int bps_set_domain_data(int domain_id, IntPtr new_data, out IntPtr old_data);
 
         [DllImport("bps")]
-        private static extern int bps_add_fd(int fd, int io_events, Func<int, int, IntPtr, int> io_handler, IntPtr data);
+        private static extern int bps_add_fd(int fd, BPSIO io_events, Func<int, int, IntPtr, int> io_handler, IntPtr data);
 
         [DllImport("bps")]
         private static extern int bps_remove_fd(int fd);
@@ -437,7 +437,7 @@ namespace BlackBerry.BPS
                 return false;
             }
             var fd = handle.DangerousGetHandle();
-            var success = bps_add_fd(fd.ToInt32(), (int)ioEvents, HandleFileDescriptor, data) == BPS_SUCCESS;
+            var success = bps_add_fd(fd.ToInt32(), ioEvents, HandleFileDescriptor, data) == BPS_SUCCESS;
             if (success)
             {
                 fdToPointer.Add(fd, data);
