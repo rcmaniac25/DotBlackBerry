@@ -137,22 +137,22 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern void virtualkeyboard_change_options(int layout, int enter);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int virtualkeyboard_get_height(out int pixels);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int virtualkeyboard_request_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int virtualkeyboard_stop_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int virtualkeyboard_get_domain();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int virtualkeyboard_event_get_height(IntPtr ev);
 
         #endregion
@@ -266,13 +266,13 @@ namespace BlackBerry.BPS
         /// <summary>
         /// Display the virtual keyboard.
         /// </summary>
-        [DllImport("bps", EntryPoint = "virtualkeyboard_show"), AvailableSince(10, 0)]
+        [DllImport(BPS.BPS_LIBRARY, EntryPoint = "virtualkeyboard_show"), AvailableSince(10, 0)]
         public static extern void Show();
 
         /// <summary>
         /// Hide the virtual keyboard.
         /// </summary>
-        [DllImport("bps", EntryPoint = "virtualkeyboard_hide"), AvailableSince(10, 0)]
+        [DllImport(BPS.BPS_LIBRARY, EntryPoint = "virtualkeyboard_hide"), AvailableSince(10, 0)]
         public static extern void Hide();
 
         /// <summary>

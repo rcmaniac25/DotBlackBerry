@@ -11,22 +11,22 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screen_input_guard_request_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screen_input_guard_stop_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screen_input_guard_get_domain();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screen_input_guard_enable();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screen_input_guard_disable();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screen_input_guard_event_get_status(IntPtr ev);
 
         #endregion

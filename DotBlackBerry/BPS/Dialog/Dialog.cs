@@ -265,76 +265,76 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_request_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_stop_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_get_domain();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_show(IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int dialog_update(IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_cancel(IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_destroy(IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_title_text(IntPtr ev, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_group_id(IntPtr ev, [MarshalAs(UnmanagedType.LPStr)]string group_id);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_input_flags(IntPtr dialog, InputFlags input_flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_busy(IntPtr dialog, bool busy);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_system(IntPtr dialog, bool system);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_priority(IntPtr dialog, bool priority);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_pid(IntPtr dialog, IntPtr pid);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_enter_key_type(IntPtr dialog, int enter_key_type);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_cancel_required(IntPtr dialog, bool cancel_required);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_default_button_index(IntPtr dialog, int default_button_index);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_button_limit(IntPtr dialog, int button_limit);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_add_button(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_update_button(IntPtr dialog, int index, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_remove_button(IntPtr dialog, int index);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr dialog_event_get_dialog_instance(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_error(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int dialog_event_get_selected_index(IntPtr ev);
 
         #endregion

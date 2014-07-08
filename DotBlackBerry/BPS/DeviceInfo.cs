@@ -57,49 +57,49 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int deviceinfo_get_details(out IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern void deviceinfo_free_details(ref IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_model_name(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_model_number(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_device_os(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_device_os_version(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_hardware_id(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_device_name(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_processor_name(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int deviceinfo_details_get_processor_core_count(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_details_get_processor_core_name(IntPtr details, int index);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int deviceinfo_details_get_processor_core_speed(IntPtr details, int index);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern bool deviceinfo_details_is_simulator(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int deviceinfo_details_get_keyboard(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int deviceinfo_details_get_hdmi_connector(IntPtr details);
 
         #endregion

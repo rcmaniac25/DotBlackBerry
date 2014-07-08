@@ -11,28 +11,28 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_alert(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_alert_message_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_alert_message_has_emoticons(IntPtr dialog, bool has_emoticons);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_alert_checkbox_checked(IntPtr dialog, bool checkd);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_alert_checkbox_label(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string label);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_alert_checkbox_enabled(IntPtr dialog, bool enabled);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_alert_icon(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string path);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern bool dialog_event_get_alert_checkbox_checked(IntPtr ev);
 
         #endregion

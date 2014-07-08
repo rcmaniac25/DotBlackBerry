@@ -94,28 +94,28 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern bool vibration_is_supported();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int vibration_request_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int vibration_stop_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int vibration_get_domain();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int vibration_event_get_duration(IntPtr ev, out int duration);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int vibration_event_get_time_left(IntPtr ev, out int time_left);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int vibration_event_get_intensity(IntPtr ev, out int intensity);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int vibration_request(int intensity, int duration);
 
         #endregion

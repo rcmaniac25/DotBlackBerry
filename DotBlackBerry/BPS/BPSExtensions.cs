@@ -31,6 +31,19 @@ namespace BlackBerry.BPS
             return false;
         }
 
+        // Make sure that the enum used is actually defined within the enumeration
+        internal static bool IsValidValue(this Enum e)
+        {
+            foreach (var v in Enum.GetValues(e.GetType()))
+            {
+                if (v.Equals(e))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         #region AddFileDescriptor
 
         /// <summary>
@@ -211,7 +224,7 @@ namespace BlackBerry.BPS
         /// <param name="ev">The event to get the code from.</param>
         /// <returns>The code, cast as the enumeration type.</returns>
         [AvailableSince(10, 0)]
-        public static T CodeAs<T>(this BPSEvent ev)
+        public static T GetCodeAs<T>(this BPSEvent ev)
         {
             return (T)Enum.ToObject(typeof(T), ev.Code);
         }

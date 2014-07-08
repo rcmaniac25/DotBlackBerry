@@ -11,49 +11,49 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_login(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_message_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_message_has_emoticons(IntPtr dialog, bool has_emoticons);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_error_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_username(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_username_placeholder(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string placeholder);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_username_keyboard_layout(IntPtr dialog, int layout);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_password(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_password_placeholder(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string placeholder);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_password_keyboard_layout(IntPtr dialog, int layout);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_remember_me(IntPtr dialog, bool remember_me);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_login_remember_me_label(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string label);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_login_username(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_login_password(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern bool dialog_event_get_login_remember_me(IntPtr ev);
 
         #endregion

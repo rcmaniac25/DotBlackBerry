@@ -66,67 +66,67 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_get_version();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int bps_initialize();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern void bps_shutdown();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern void bps_free(IntPtr ptr);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_logging_init();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern void bps_set_verbosity(uint verbosity);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_register_domain();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_push_event(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_register_shutdown_handler(Action<IntPtr> shutdown_handler, IntPtr data);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_register_channel_destroy_handler(Action<IntPtr> destroy_handler, IntPtr data);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int bps_channel_create(out int chid, int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_channel_get_active();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_channel_set_active(int chid);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int bps_channel_destroy(int chid);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int bps_channel_push_event(int chid, IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int bps_channel_exec(int chid, Func<IntPtr, int> exec, IntPtr data);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr bps_get_domain_data(int domain_id);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_set_domain_data(int domain_id, IntPtr new_data, out IntPtr old_data);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_add_fd(int fd, BPSIO io_events, Func<int, int, IntPtr, int> io_handler, IntPtr data);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_remove_fd(int fd);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_get_event(out IntPtr ev, int timeout_ms);
 
         #endregion
@@ -138,10 +138,13 @@ namespace BlackBerry.BPS
 
         #endregion
 
+        internal const string BPS_LIBRARY = "bps";
+
         private static BPS initBPS = null;
         private static int initBPScount = 0;
         private static ConcurrentSet<IntPtr> allocatedPointers = new ConcurrentSet<IntPtr>();
         private static IDictionary<IntPtr, IntPtr> fdToPointer = new ConcurrentDictionary<IntPtr, IntPtr>();
+        private static long eventToken = 0L; //XXX token needs a different way of being updated... tokens are thread/channel specific
 
         private bool canShutdown;
         private bool disposed;
@@ -175,6 +178,14 @@ namespace BlackBerry.BPS
         }
 
         #region Properties
+
+        internal static long CurrentToken
+        {
+            get
+            {
+                return Interlocked.Read(ref eventToken);
+            }
+        }
 
         /// <summary>
         /// BPS Version
@@ -281,9 +292,9 @@ namespace BlackBerry.BPS
 
         private static void CleanupPointers(IntPtr ignore)
         {
-            var oldData = allocatedPointers.ToArray();
+            var oldPtrData = allocatedPointers.ToArray();
             allocatedPointers.Clear();
-            foreach (var ptr in oldData)
+            foreach (var ptr in oldPtrData)
             {
                 try
                 {
@@ -318,13 +329,15 @@ namespace BlackBerry.BPS
 
 #endif
 
+        #region Cleanup References
+
         internal bool RegisterSerializedPointer(IntPtr ptr)
         {
             if (ptr != IntPtr.Zero)
             {
                 return allocatedPointers.Add(ptr);
             }
-            return true;
+            return false;
         }
 
         internal bool UnregisterSerializedPointer(IntPtr ptr)
@@ -333,8 +346,10 @@ namespace BlackBerry.BPS
             {
                 return allocatedPointers.Remove(ptr);
             }
-            return true;
+            return false;
         }
+
+        #endregion
 
         /// <summary>
         /// Set the verbosity of logging for platform services.
@@ -644,7 +659,8 @@ namespace BlackBerry.BPS
                 }
                 throw new OperationCanceledException("GetEvent exited without returning an event or an error");
             }
-            return new BPSEvent(ev, false);
+            //XXX token needs a different way of being updated... tokens are thread/channel specific
+            return new BPSEvent(ev, Interlocked.Increment(ref eventToken) - 1, false);
         }
 
         #endregion

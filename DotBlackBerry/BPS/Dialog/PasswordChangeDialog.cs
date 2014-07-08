@@ -11,67 +11,67 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_password_change(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_error_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_username(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_username_placeholder(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string placeholder);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_username_keyboard_layout(IntPtr dialog, int layout);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_old_password(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_old_password_placeholder(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string placeholder);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_old_password_keyboard_layout(IntPtr dialog, int layout);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_new_password(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_new_password_placeholder(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string placeholder);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_new_password_keyboard_layout(IntPtr dialog, int layout);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_confirm_password(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_confirm_password_placeholder(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string placeholder);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_confirm_password_keyboard_layout(IntPtr dialog, int layout);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_remember_me(IntPtr dialog, bool remember_me);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_password_change_remember_me_label(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string label);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_password_change_username(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_password_change_old_password(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_password_change_new_password(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_password_change_confirm_password(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern bool dialog_event_get_password_change_remember_me(IntPtr ev);
 
         #endregion

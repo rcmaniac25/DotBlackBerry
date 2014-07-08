@@ -125,22 +125,22 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int led_request_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int led_stop_events(int flags);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int led_get_domain();
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int led_event_get_rgb(IntPtr ev, out bool red, out bool green, out bool blue);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int led_request_color([MarshalAs(UnmanagedType.LPStr)]string id, LEDColor color, int blink_count);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int led_cancel([MarshalAs(UnmanagedType.LPStr)]string id);
 
         #endregion

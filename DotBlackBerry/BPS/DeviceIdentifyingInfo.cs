@@ -11,28 +11,28 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int deviceinfo_get_identifying_details(out IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern void deviceinfo_free_identifying_details([In, Out]ref IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int deviceinfo_identifying_details_get_pin(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_identifying_details_get_pin_string(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern long deviceinfo_identifying_details_get_serial_number(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_identifying_details_get_serial_number_string(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_identifying_details_get_imei(IntPtr details);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr deviceinfo_identifying_details_get_meid(IntPtr details);
 
         #endregion

@@ -86,13 +86,13 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_toast(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_toast_message_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_toast_position(IntPtr dialog, ToastPosition position);
 
         #endregion
@@ -186,10 +186,10 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_icon_toast(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_toast_icon(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string path);
 
         #endregion
@@ -252,16 +252,16 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_progress_toast(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_progress_toast_state(IntPtr dialog, ProgressState state);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_progress_toast_level(IntPtr dialog, int progress);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_progress_toast_details(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
         #endregion
@@ -386,22 +386,22 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_volume_toast(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_volume_toast_device_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_volume_toast_muted(IntPtr dialog, bool muted);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_volume_toast_level(IntPtr dialog, int level);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_volume_toast_direction(IntPtr dialog, VolumeDirection direction);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_volume_toast_control(IntPtr dialog, VolumeControlType control);
 
         #endregion

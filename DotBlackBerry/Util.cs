@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 #if BLACKBERRY_USE_SERIALIZATION
 using System.Runtime.Serialization;
@@ -127,13 +129,23 @@ namespace BlackBerry
                 try
                 {
                     Mono.Unix.UnixMarshal.ThrowExceptionForError(errno);
-                    return new InvalidOperationException(Mono.Unix.UnixMarshal.GetErrorDescription(errno));
+                    return new InvalidOperationException(Mono.Unix.UnixMarshal.GetErrorDescription(errno)); // Backup if no exception gets thrown.
                 }
                 catch (Exception e)
                 {
                     return e;
                 }
             }
+        }
+
+        /// <summary>
+        /// Get the exception to throw for the last errno.
+        /// </summary>
+        /// <param name="throwForGeneric">Throw exception for general, Mono supported exceptions.</param>
+        /// <returns>The exeption to throw, or null if there was no exception.</returns>
+        public static Exception GetExceptionForLastErrno(bool throwForGeneric = false)
+        {
+            return GetExceptionForErrno(Stdlib.GetLastError(), throwForGeneric);
         }
 
         /// <summary>
@@ -235,6 +247,10 @@ namespace BlackBerry
 
         #region Serialize .Net Objects
 
+#if !BLACKBERRY_USE_SERIALIZATION
+        private static IDictionary<IntPtr, IntPtr> dataPtrToPointer = new ConcurrentDictionary<IntPtr, IntPtr>();
+#endif
+
         /// <summary>
         /// Serialize an object to a pointer.
         /// </summary>
@@ -279,7 +295,37 @@ namespace BlackBerry
             Marshal.Copy(data, 0, ptr, (int)ms.Length);
             return ptr;
 #else
-            return GCHandle.ToIntPtr(GCHandle.Alloc(obj, type));
+            var handle = GCHandle.Alloc(obj, type);
+            var ptr = GCHandle.ToIntPtr(handle);
+            if (type == GCHandleType.Pinned)
+            {
+                var pinnedPtr = handle.AddrOfPinnedObject();
+                dataPtrToPointer.Add(pinnedPtr, ptr);
+                return pinnedPtr;
+            }
+            return ptr;
+#endif
+        }
+
+        private static IntPtr GetPointerForPotentialPinnedData(IntPtr ptr)
+        {
+#if BLACKBERRY_USE_SERIALIZATION
+            return ptr;
+#else
+            if (ptr == IntPtr.Zero)
+            {
+                return ptr;
+            }
+            // If the data pointer exists, then use it. Otherwise return ptr, as serialized data might not be pinned (and thus wouldn't be in the collection)
+            IntPtr pointer;
+            if (dataPtrToPointer.TryGetValue(ptr, out pointer))
+            {
+                return pointer;
+            }
+            else
+            {
+                return ptr;
+            }
 #endif
         }
 
@@ -313,25 +359,38 @@ namespace BlackBerry
                 return null;
             }
 #else
-            return GCHandle.FromIntPtr(ptr).Target;
+            var pointer = GetPointerForPotentialPinnedData(ptr);
+            if (pointer == IntPtr.Zero)
+            {
+                return null;
+            }
+            return GCHandle.FromIntPtr(pointer).Target;
 #endif
         }
 
         /// <summary>
-        /// Free the serialized pointer (just a wrapper around Syscall.free)
+        /// Free the serialized pointer.
         /// </summary>
         /// <param name="ptr">The pointer to free.</param>
-        public static void FreeSerializePointer(IntPtr ptr)
+        /// <returns>true if the pointer was freed, false if otherwise.</returns>
+        public static bool FreeSerializePointer(IntPtr ptr)
         {
             if (ptr == IntPtr.Zero)
             {
-                return;
+                return true;
             }
 #if BLACKBERRY_USE_SERIALIZATION
             Syscall.free(ptr);
 #else
-            GCHandle.FromIntPtr(ptr).Free();
+            var pointer = GetPointerForPotentialPinnedData(ptr);
+            if (pointer == IntPtr.Zero)
+            {
+                return false;
+            }
+            GCHandle.FromIntPtr(pointer).Free();
+            dataPtrToPointer.Remove(ptr);
 #endif
+            return true;
         }
 
         #endregion

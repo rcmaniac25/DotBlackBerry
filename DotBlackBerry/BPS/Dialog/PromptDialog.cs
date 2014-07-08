@@ -11,31 +11,31 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_prompt(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_prompt_message_text(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_prompt_message_has_emoticons(IntPtr dialog, bool has_emoticons);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_prompt_input_field(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string text);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_prompt_input_placeholder(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string input_placeholder);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_prompt_maximum_characters(IntPtr dialog, int max_chars);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_prompt_display_as_password(IntPtr dialog, bool display_as_password);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_prompt_input_keyboard_layout(IntPtr dialog, int layout);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr dialog_event_get_prompt_input_field(IntPtr ev);
 
         #endregion

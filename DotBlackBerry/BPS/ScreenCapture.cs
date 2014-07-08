@@ -36,19 +36,19 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screencapture_grab([MarshalAs(UnmanagedType.LPStr)]string filename, CaptureFormat format, out IntPtr result);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screencapture_result_get_error_code(IntPtr result);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr screencapture_result_get_error_message(IntPtr result);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr screencapture_result_get_filename(IntPtr result);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int screencapture_destroy_result(IntPtr result);
 
         #endregion

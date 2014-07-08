@@ -144,19 +144,19 @@ namespace BlackBerry.BPS
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern void bps_event_destroy(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_event_get_domain(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern uint bps_event_get_code(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern IntPtr bps_event_get_payload(IntPtr ev);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_event_create(out IntPtr ev, uint domain, uint code, IntPtr payload_ptr, Action<IntPtr> completion_function);
 
         #endregion
@@ -170,10 +170,18 @@ namespace BlackBerry.BPS
         private static IDictionary<IntPtr, Action<BPSEvent>> handleToCallback = new ConcurrentDictionary<IntPtr, Action<BPSEvent>>();
 
         private IntPtr handle;
+        private long? token;
+
+        internal BPSEvent(IntPtr hwnd, long id, bool disposable = false)
+            : this(hwnd, disposable)
+        {
+            token = id;
+        }
 
         internal BPSEvent(IntPtr hwnd, bool disposable = false)
         {
             handle = hwnd;
+            token = null;
             IsDisposable = disposable;
         }
 
@@ -278,6 +286,20 @@ namespace BlackBerry.BPS
             BPSEventPayload.FreeDataPointer(bps_event_get_payload(ptr));
         }
 
+        private void CheckState()
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new ObjectDisposedException("BPSEvent");
+            }
+            if (token.HasValue && token != BPS.CurrentToken)
+            {
+                handle = IntPtr.Zero;
+                token = null;
+                throw new ObjectDisposedException("BPSEvent");
+            }
+        }
+
         /// <summary>
         /// Get if the event is disposable.
         /// </summary>
@@ -292,10 +314,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (handle == IntPtr.Zero)
-                {
-                    throw new ObjectDisposedException("BPSEvent");
-                }
+                CheckState();
                 return bps_event_get_code(handle);
             }
         }
@@ -309,10 +328,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (handle == IntPtr.Zero)
-                {
-                    throw new ObjectDisposedException("BPSEvent");
-                }
+                CheckState();
                 return bps_event_get_domain(handle);
             }
         }
@@ -326,10 +342,7 @@ namespace BlackBerry.BPS
             [AvailableSince(10, 0)]
             get
             {
-                if (handle == IntPtr.Zero)
-                {
-                    throw new ObjectDisposedException("BPSEvent");
-                }
+                CheckState();
                 return new BPSEventPayload(bps_event_get_payload(handle));
             }
         }
@@ -340,10 +353,7 @@ namespace BlackBerry.BPS
         /// <returns>The internal handle of the BPS event.</returns>
         internal IntPtr DangerousGetHandle()
         {
-            if (handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("BPSEvent");
-            }
+            CheckState();
             return handle;
         }
 
@@ -375,6 +385,7 @@ namespace BlackBerry.BPS
             {
                 bps_event_destroy(handle);
                 handle = IntPtr.Zero;
+                token = null;
             }
         }
     }

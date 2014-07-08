@@ -109,13 +109,13 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_context_menu(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_context_menu_add_button(IntPtr dialog, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible, ContextMenuIcon icon);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_context_menu_update_button(IntPtr dialog, int index, [MarshalAs(UnmanagedType.LPStr)]string label, bool enabled, IntPtr button_context, bool visible, ContextMenuIcon icon);
 
         #endregion

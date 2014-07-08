@@ -66,40 +66,40 @@ namespace BlackBerry.BPS.Dialog
     {
         #region PInvoke
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_create_popuplist(out IntPtr dialog);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_multiselect(IntPtr dialog, bool multi_select);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_allow_deselect(IntPtr dialog, bool allow_deselect);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_cancel_on_selection(IntPtr dialog, bool cancel_on_selection);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_show_basic_selection(IntPtr dialog, bool show_basic_selection);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_items(IntPtr dialog, string[] items, int num_items);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_selected_indices(IntPtr dialog, int[] selected_indices, int num_items);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_disabled_indices(IntPtr dialog, int[] disabled_indices, int num_items);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_header_indices(IntPtr dialog, int[] header_indices, int num_items);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_separator_indices(IntPtr dialog, int[] separator_indices, int num_items);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int dialog_set_popuplist_scroll_to_index(IntPtr dialog, int index);
 
-        [DllImport("bps")]
+        [DllImport(BPS.BPS_LIBRARY)]
         internal static extern int dialog_event_get_popuplist_selected_indices(IntPtr ev, out IntPtr selected_indices, out int num_indices);
 
         #endregion
