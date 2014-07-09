@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace BlackBerry.BPS
@@ -9,6 +11,52 @@ namespace BlackBerry.BPS
     [AvailableSince(10, 0)]
     public sealed class Channel : IDisposable
     {
+        #region Event Token
+
+        [ThreadStatic]
+        private static IDictionary<int, CancellationTokenSource> eventValidityToken; // Don't set to any value...
+
+        private static CancellationTokenSource GetTokenSource(int channel, bool initTokens = true)
+        {
+            if (initTokens)
+            {
+                Interlocked.CompareExchange(ref eventValidityToken, new ConcurrentDictionary<int, CancellationTokenSource>(), null);
+            }
+            if (eventValidityToken != null)
+            {
+                CancellationTokenSource token;
+                if (!eventValidityToken.TryGetValue(channel, out token))
+                {
+                    token = new CancellationTokenSource();
+                    eventValidityToken.Add(channel, token);
+                }
+                return token;
+            }
+            return null;
+        }
+
+        internal static CancellationToken GetNewToken(int channel)
+        {
+            if (eventValidityToken == null)
+            {
+                return GetTokenSource(channel).Token;
+            }
+            GetTokenSource(channel).Cancel();
+            var token = new CancellationTokenSource();
+            eventValidityToken[channel] = token;
+            return token.Token;
+        }
+
+        private static void RemoveToken(int channel)
+        {
+            if (eventValidityToken != null)
+            {
+                eventValidityToken.Remove(channel);
+            }
+        }
+
+        #endregion
+
         private int chid;
 
         /// <summary>
@@ -79,6 +127,12 @@ namespace BlackBerry.BPS
             if (BPS.bps_channel_destroy(chid) != BPS.BPS_SUCCESS)
             {
                 Util.ThrowExceptionForLastErrno();
+            }
+            var token = GetTokenSource(chid, false);
+            if (token != null)
+            {
+                RemoveToken(chid);
+                token.Cancel();
             }
             chid = 0;
         }

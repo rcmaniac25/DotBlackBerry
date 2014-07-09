@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\DotBlackBerry.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
@@ -38,6 +40,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -68,10 +71,12 @@
     <Compile Include="BPS\LED.cs" />
     <Compile Include="BPS\Navigator.cs" />
     <Compile Include="BPS\ScreenCapture.cs" />
+    <Compile Include="BPS\WindowCover.cs" />
     <Compile Include="BPS\ScreenEvent.cs" />
     <Compile Include="BPS\ScreenInputGuard.cs" />
     <Compile Include="BPS\Vibration.cs" />
     <Compile Include="BPS\VirtualKeyboard.cs" />
+    <Compile Include="BPS\WindowCoverLabel.cs" />
     <Compile Include="Camera\CameraException.cs" />
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Internal\Config.cs" />

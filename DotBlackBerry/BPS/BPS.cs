@@ -136,15 +136,15 @@ namespace BlackBerry.BPS
         internal const int BPS_SUCCESS = 0;
         internal const int BPS_FAILURE = -1;
 
-        #endregion
-
         internal const string BPS_LIBRARY = "bps";
+
+        #endregion
 
         private static BPS initBPS = null;
         private static int initBPScount = 0;
         private static ConcurrentSet<IntPtr> allocatedPointers = new ConcurrentSet<IntPtr>();
+        private static ConcurrentSet<Action> cleanupFunctions = new ConcurrentSet<Action>();
         private static IDictionary<IntPtr, IntPtr> fdToPointer = new ConcurrentDictionary<IntPtr, IntPtr>();
-        private static long eventToken = 0L; //XXX token needs a different way of being updated... tokens are thread/channel specific
 
         private bool canShutdown;
         private bool disposed;
@@ -167,7 +167,7 @@ namespace BlackBerry.BPS
                 {
                     Util.ThrowExceptionForLastErrno();
                 }
-                if ((initBPScount++) == 1)
+                if (Interlocked.Increment(ref initBPScount) == 1)
                 {
                     bps_register_channel_destroy_handler(CleanupPointers, IntPtr.Zero);
                     initBPS = this;
@@ -178,14 +178,6 @@ namespace BlackBerry.BPS
         }
 
         #region Properties
-
-        internal static long CurrentToken
-        {
-            get
-            {
-                return Interlocked.Read(ref eventToken);
-            }
-        }
 
         /// <summary>
         /// BPS Version
@@ -280,21 +272,20 @@ namespace BlackBerry.BPS
             disposed = true;
             if (initBPScount > 0)
             {
-                initBPScount--;
-                if (initBPScount == 0)
+                if (Interlocked.Decrement(ref initBPScount) == 0)
                 {
                     initBPS = null;
                 }
                 bps_shutdown();
             }
-            // Don't call GC.SuppressFinalize as this works off a reference count-style methodology
+            // Don't call GC.SuppressFinalize as this works off a reference count-style methodology and we don't use a finalizer anyway
         }
 
         private static void CleanupPointers(IntPtr ignore)
         {
-            var oldPtrData = allocatedPointers.ToArray();
+            var oldData = allocatedPointers.ToArray();
             allocatedPointers.Clear();
-            foreach (var ptr in oldPtrData)
+            foreach (var ptr in oldData)
             {
                 try
                 {
@@ -303,6 +294,20 @@ namespace BlackBerry.BPS
                 catch
                 {
                     //TODO big error...
+                }
+            }
+
+            var cleanup = cleanupFunctions.ToArray();
+            cleanupFunctions.Clear();
+            foreach (var clean in cleanup)
+            {
+                try
+                {
+                    clean();
+                }
+                catch
+                {
+                    //TODO: pity... probably log it
                 }
             }
 
@@ -331,7 +336,7 @@ namespace BlackBerry.BPS
 
         #region Cleanup References
 
-        internal bool RegisterSerializedPointer(IntPtr ptr)
+        internal static bool RegisterSerializedPointer(IntPtr ptr)
         {
             if (ptr != IntPtr.Zero)
             {
@@ -340,11 +345,32 @@ namespace BlackBerry.BPS
             return false;
         }
 
-        internal bool UnregisterSerializedPointer(IntPtr ptr)
+        internal static bool UnregisterSerializedPointer(IntPtr ptr)
         {
             if (ptr != IntPtr.Zero)
             {
                 return allocatedPointers.Remove(ptr);
+            }
+            return false;
+        }
+
+        internal static bool RegisterCleanup(Action cleanup, bool mustCleanup = false)
+        {
+            if (cleanup != null)
+            {
+                var result = cleanupFunctions.Add(cleanup);
+                if (result && mustCleanup)
+                {
+                    AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+                    {
+                        if (cleanupFunctions.Contains(cleanup))
+                        {
+                            cleanup();
+                            cleanupFunctions.Remove(cleanup);
+                        }
+                    };
+                }
+                return result;
             }
             return false;
         }
@@ -659,8 +685,7 @@ namespace BlackBerry.BPS
                 }
                 throw new OperationCanceledException("GetEvent exited without returning an event or an error");
             }
-            //XXX token needs a different way of being updated... tokens are thread/channel specific
-            return new BPSEvent(ev, Interlocked.Increment(ref eventToken) - 1, false);
+            return new BPSEvent(ev, Channel.GetNewToken(bps_channel_get_active()), false);
         }
 
         #endregion

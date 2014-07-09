@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 using Mono.Unix.Native;
 
@@ -111,9 +112,9 @@ namespace BlackBerry.BPS
                 return IntPtr.Zero;
             }
             Marshal.StructureToPtr(payload, result, false);
-            BPS.AvaliableInstance.RegisterSerializedPointer(payload.data1);
-            BPS.AvaliableInstance.RegisterSerializedPointer(payload.data2);
-            BPS.AvaliableInstance.RegisterSerializedPointer(payload.data3);
+            BPS.RegisterSerializedPointer(payload.data1);
+            BPS.RegisterSerializedPointer(payload.data2);
+            BPS.RegisterSerializedPointer(payload.data3);
             return result;
         }
 
@@ -125,9 +126,9 @@ namespace BlackBerry.BPS
             }
             var payload = new Payload();
             Marshal.PtrToStructure(ptr, payload);
-            BPS.AvaliableInstance.UnregisterSerializedPointer(payload.data1);
-            BPS.AvaliableInstance.UnregisterSerializedPointer(payload.data2);
-            BPS.AvaliableInstance.UnregisterSerializedPointer(payload.data3);
+            BPS.UnregisterSerializedPointer(payload.data1);
+            BPS.UnregisterSerializedPointer(payload.data2);
+            BPS.UnregisterSerializedPointer(payload.data3);
             Util.FreeSerializePointer(payload.data1);
             Util.FreeSerializePointer(payload.data2);
             Util.FreeSerializePointer(payload.data3);
@@ -170,19 +171,26 @@ namespace BlackBerry.BPS
         private static IDictionary<IntPtr, Action<BPSEvent>> handleToCallback = new ConcurrentDictionary<IntPtr, Action<BPSEvent>>();
 
         private IntPtr handle;
-        private long? token;
+        private CancellationToken token;
 
-        internal BPSEvent(IntPtr hwnd, long id, bool disposable = false)
+        internal BPSEvent(IntPtr hwnd, CancellationToken token, bool disposable = false)
             : this(hwnd, disposable)
         {
-            token = id;
+            this.token = token;
         }
 
         internal BPSEvent(IntPtr hwnd, bool disposable = false)
         {
             handle = hwnd;
-            token = null;
+            token = CancellationToken.None;
             IsDisposable = disposable;
+        }
+
+        internal BPSEvent(BPSEvent baseEvent)
+        {
+            handle = baseEvent.handle;
+            token = baseEvent.token;
+            IsDisposable = baseEvent.IsDisposable;
         }
 
         /// <summary>
@@ -292,10 +300,9 @@ namespace BlackBerry.BPS
             {
                 throw new ObjectDisposedException("BPSEvent");
             }
-            if (token.HasValue && token != BPS.CurrentToken)
+            if (token.IsCancellationRequested)
             {
                 handle = IntPtr.Zero;
-                token = null;
                 throw new ObjectDisposedException("BPSEvent");
             }
         }
@@ -304,6 +311,17 @@ namespace BlackBerry.BPS
         /// Get if the event is disposable.
         /// </summary>
         public bool IsDisposable { get; private set; }
+
+        /// <summary>
+        /// Get if the event is valid.
+        /// </summary>
+        public bool IsValid
+        {
+            get
+            {
+                return handle != IntPtr.Zero;
+            }
+        }
 
         /// <summary>
         /// Get the code of an event.
@@ -385,7 +403,7 @@ namespace BlackBerry.BPS
             {
                 bps_event_destroy(handle);
                 handle = IntPtr.Zero;
-                token = null;
+                token = CancellationToken.None;
             }
         }
     }

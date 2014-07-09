@@ -29,7 +29,7 @@ namespace BlackBerry.BPS
         private static extern IntPtr screen_event_get_event(IntPtr ev);
 
         [DllImport(BPS.BPS_LIBRARY)]
-        private static extern int screen_event_get_errno(IntPtr ev);
+        private static extern Errno screen_event_get_errno(IntPtr ev);
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace BlackBerry.BPS
         {
             if (isFailure)
             {
-                ScreenError = (Errno)screen_event_get_errno(ev);
+                ScreenError = screen_event_get_errno(ev);
             }
             Event = new BlackBerry.Screen.ScreenEvent(screen_event_get_event(ev));
             Context = null;
