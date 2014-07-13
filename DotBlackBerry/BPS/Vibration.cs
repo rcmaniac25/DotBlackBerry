@@ -216,11 +216,11 @@ namespace BlackBerry.BPS
             Util.GetBPSOrException();
             if (intensity < 0 || intensity > 100)
             {
-                throw new ArgumentOutOfRangeException("intensity", "0 <= intensity <= 100");
+                throw new ArgumentOutOfRangeException("intensity", intensity, "0 <= intensity <= 100");
             }
             if (duration.TotalMilliseconds < 0 || duration.TotalMilliseconds > 5000)
             {
-                throw new ArgumentOutOfRangeException("duration", "0 ms <= duration <= 5000 ms");
+                throw new ArgumentOutOfRangeException("duration", duration, "0 ms <= duration <= 5000 ms");
             }
             return vibration_request(intensity, (int)duration.TotalMilliseconds) == BPS.BPS_SUCCESS;
         }

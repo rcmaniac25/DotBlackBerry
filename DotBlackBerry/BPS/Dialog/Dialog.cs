@@ -861,7 +861,7 @@ namespace BlackBerry.BPS.Dialog
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException("value", "ButtonLimit must be greater then 1");
+                    throw new ArgumentOutOfRangeException("value", value, "ButtonLimit must be greater then 1");
                 }
                 if (value != buttonLimit)
                 {

@@ -145,7 +145,7 @@ namespace BlackBerry.BPS
                 {
                     if (value <= 0)
                     {
-                        throw new ArgumentOutOfRangeException("FontSize", "must be greater than 0");
+                        throw new ArgumentOutOfRangeException("FontSize", value, "must be greater than 0");
                     }
                     if (Navigator.navigator_window_cover_label_set_size(handle, value) == BPS.BPS_SUCCESS)
                     {

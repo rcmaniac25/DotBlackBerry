@@ -104,7 +104,7 @@ namespace BlackBerry.BPS
         {
             if (blinkCount < 0)
             {
-                throw new ArgumentOutOfRangeException("blinkCount", "0 <= blinkCount");
+                throw new ArgumentOutOfRangeException("blinkCount", blinkCount, "0 <= blinkCount");
             }
             var success = LED.led_request_color(id, color, blinkCount) == BPS.BPS_SUCCESS;
             if (success)

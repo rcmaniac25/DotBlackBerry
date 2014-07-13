@@ -333,7 +333,7 @@ namespace BlackBerry.BPS.Dialog
                 {
                     if (value < -1 || value > 100)
                     {
-                        throw new ArgumentOutOfRangeException("Progress", "0 <= Progress <= 100 OR -1 for indefinite progress");
+                        throw new ArgumentOutOfRangeException("Progress", value, "0 <= Progress <= 100 OR -1 for indefinite progress");
                     }
                     if (dialog_set_progress_toast_level(handle, value) != BPS.BPS_SUCCESS)
                     {

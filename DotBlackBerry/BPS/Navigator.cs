@@ -840,7 +840,7 @@ namespace BlackBerry.BPS
             Util.GetBPSOrException();
             if (extension.TotalMilliseconds < 0)
             {
-                throw new ArgumentOutOfRangeException("extension", "Extension cannot be negative.");
+                throw new ArgumentOutOfRangeException("extension", extension, "Extension cannot be negative.");
             }
             if (extension.TotalMilliseconds == 0)
             {
@@ -1479,13 +1479,7 @@ namespace BlackBerry.BPS
                 return null;
             }
             var result = new byte[dataLen];
-            unsafe
-            {
-                using (var ums = new System.IO.UnmanagedMemoryStream((byte*)data.ToPointer(), dataLen))
-                {
-                    ums.Read(result, 0, result.Length);
-                }
-            }
+            Marshal.Copy(data, result, 0, (int)dataLen);
             return result;
         }
 

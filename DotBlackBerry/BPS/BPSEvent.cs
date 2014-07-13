@@ -245,11 +245,11 @@ namespace BlackBerry.BPS
         {
             if (domain < 0 || domain > BPS_EVENT_DOMAIN_MAX)
             {
-                throw new ArgumentOutOfRangeException("domain", "0 <= domain < BPS_EVENT_DOMAIN_MAX");
+                throw new ArgumentOutOfRangeException("domain", domain, "0 <= domain < BPS_EVENT_DOMAIN_MAX");
             }
             if (code > ushort.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("code", "0 <= code < UInt16.MaxValue");
+                throw new ArgumentOutOfRangeException("code", code, "0 <= code < UInt16.MaxValue");
             }
             Util.GetBPSOrException();
             var payloadPtr = payload.GetDataPointer();

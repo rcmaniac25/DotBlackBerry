@@ -203,7 +203,7 @@ namespace BlackBerry.BPS.Dialog
                 var item = items[i];
                 if (item.Type < PopupListItemType.Text || item.Type > PopupListItemType.Separator)
                 {
-                    throw new ArgumentOutOfRangeException(string.Format("Items[{0}]", i), "Not a valid PopupListItemType");
+                    throw new ArgumentOutOfRangeException(string.Format("Items[{0}]", i), item.Type, "Not a valid PopupListItemType");
                 }
                 if (item.Type != PopupListItemType.Text)
                 {
@@ -245,7 +245,7 @@ namespace BlackBerry.BPS.Dialog
                 {
                     if (value < 0 || value > items.Length)
                     {
-                        throw new ArgumentOutOfRangeException("0 <= FirstVisible < Items.Length");
+                        throw new ArgumentOutOfRangeException("FirstVisible", value, "0 <= FirstVisible < Items.Length");
                     }
                     if (dialog_set_popuplist_scroll_to_index(handle, value) != BPS.BPS_SUCCESS)
                     {

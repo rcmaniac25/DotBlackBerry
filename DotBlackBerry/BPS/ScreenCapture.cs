@@ -64,7 +64,7 @@ namespace BlackBerry.BPS
         {
             if (format < CaptureFormat.Filename || format > CaptureFormat.PNG)
             {
-                throw new ArgumentOutOfRangeException("format", "Not a supported capture format");
+                throw new ArgumentOutOfRangeException("format", format, "Not a supported capture format");
             }
             IntPtr result;
             if (screencapture_grab(filename, format, out result) != BPS.BPS_SUCCESS)

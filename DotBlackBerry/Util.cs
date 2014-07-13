@@ -170,9 +170,10 @@ namespace BlackBerry
         /// <summary>
         /// Get the last errno and throw an exception for it.
         /// </summary>
-        public static void ThrowExceptionForLastErrno()
+        /// <param name="logNoError">If there is no error, log that this was called (meaning a failure occured) but that no error existed.</param>
+        public static void ThrowExceptionForLastErrno(bool logNoError = true)
         {
-            ThrowExceptionForErrno(Stdlib.GetLastError());
+            ThrowExceptionForErrno(Stdlib.GetLastError(), logNoError);
         }
 
         #endregion
@@ -391,6 +392,34 @@ namespace BlackBerry
             dataPtrToPointer.Remove(ptr);
 #endif
             return true;
+        }
+
+        #endregion
+
+        #region General
+
+        /// <summary>
+        /// Read a int array.
+        /// </summary>
+        /// <param name="handle">The handle to the array.</param>
+        /// <param name="count">The number of elements in the array.</param>
+        /// <returns>The parsed array.</returns>
+        public static int[] ParseInt32Array(IntPtr handle, int count)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                return null;
+            }
+            if (count == 0)
+            {
+                return new int[0];
+            }
+            var arr = new int[count];
+            for (int i = 0; i < count; i++)
+            {
+                arr[i] = Marshal.ReadInt32(handle, i * sizeof(int));
+            }
+            return arr;
         }
 
         #endregion

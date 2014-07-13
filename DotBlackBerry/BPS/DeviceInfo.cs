@@ -376,7 +376,7 @@ namespace BlackBerry.BPS
             Util.GetBPSOrException();
             if (index < 0 || index > deviceinfo_details_get_processor_core_count(handle))
             {
-                throw new ArgumentOutOfRangeException("index", "0 <= index < ProcessorCoreCount");
+                throw new ArgumentOutOfRangeException("index", index, "0 <= index < ProcessorCoreCount");
             }
             return Marshal.PtrToStringAnsi(deviceinfo_details_get_processor_core_name(handle, index));
         }
@@ -396,7 +396,7 @@ namespace BlackBerry.BPS
             Util.GetBPSOrException();
             if (index < 0 || index > deviceinfo_details_get_processor_core_count(handle))
             {
-                throw new ArgumentOutOfRangeException("index", "0 <= index < ProcessorCoreCount");
+                throw new ArgumentOutOfRangeException("index", index, "0 <= index < ProcessorCoreCount");
             }
             var res = deviceinfo_details_get_processor_core_speed(handle, index);
             if (res == BPS.BPS_FAILURE)
