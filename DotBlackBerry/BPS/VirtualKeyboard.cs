@@ -141,6 +141,9 @@ namespace BlackBerry.BPS
         private static extern void virtualkeyboard_change_options(int layout, int enter);
 
         [DllImport(BPS.BPS_LIBRARY)]
+        private static extern void virtualkeyboard_change_options_v2(int layout, int enter, bool no_help);
+
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int virtualkeyboard_get_height(out int pixels);
 
         [DllImport(BPS.BPS_LIBRARY)]
@@ -276,14 +279,22 @@ namespace BlackBerry.BPS
         public static extern void Hide();
 
         /// <summary>
-        /// Change the virtual keyboard layout and Enter key options.
+        /// Change the virtual keyboard layout, and Enter key options.
         /// </summary>
         /// <param name="layout">The virtual keyboard layout to set.</param>
         /// <param name="enter">The Enter key text to set.</param>
+        /// <param name="noHelp">Turn off the hints if true. Otherwise, turn on the hints. This only works on 10.3 and higher.</param>
         [AvailableSince(10, 0)]
-        public static void SetOptions(VirtualKeyboardLayout layout, VirtualKeyboardEnter enter)
+        public static void SetOptions(VirtualKeyboardLayout layout, VirtualKeyboardEnter enter, bool noHelp = true)
         {
-            virtualkeyboard_change_options(LayoutToInt(layout), EnterKeyToInt(enter));
+            if (Util.IsCapableOfRunning(10, 3))
+            {
+                virtualkeyboard_change_options_v2(LayoutToInt(layout), EnterKeyToInt(enter), noHelp);
+            }
+            else
+            {
+                virtualkeyboard_change_options(LayoutToInt(layout), EnterKeyToInt(enter));
+            }
         }
 
         #endregion

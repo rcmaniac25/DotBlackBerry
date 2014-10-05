@@ -29,21 +29,25 @@ namespace BlackBerry.BPS.Invoke
         /// <summary>
         /// Weekly
         /// </summary>
+        /// A rule with this frequency will have a weekly recurrence.
         [AvailableSince(10, 3)]
         Weekly = 3,
         /// <summary>
         /// Daily
         /// </summary>
+        /// A rule with this frequency will have a daily recurrence.
         [AvailableSince(10, 3)]
         Daily = 4,
         /// <summary>
         /// Hourly
         /// </summary>
+        /// A rule with this frequency will have an hourly recurrence.
         [AvailableSince(10, 3)]
         Hourly = 5,
         /// <summary>
         /// Minutely
         /// </summary>
+        /// A rule with this frequency will have a recurrence every minute.
         [AvailableSince(10, 3)]
         Minutely = 6
     }
@@ -123,7 +127,7 @@ namespace BlackBerry.BPS.Invoke
         /// <summary>
         /// Create a new instance of a recurrence rule.
         /// </summary>
-        /// <param name="frequency">The frequency at which the recurrence will occur.</param>
+        /// <param name="frequency">The frequency of the recurrence.</param>
         [AvailableSince(10, 3)]
         public RecurrenceRule(Frequency frequency)
         {
@@ -240,7 +244,7 @@ namespace BlackBerry.BPS.Invoke
         /// Get or set the interval of a recurrence rule.
         /// </summary>
         [AvailableSince(10, 3)]
-        public int? Interval
+        public int Interval
         {
             [AvailableSince(10, 3)]
             get
@@ -249,8 +253,7 @@ namespace BlackBerry.BPS.Invoke
                 var res = navigator_invoke_recurrence_rule_get_interval(handle);
                 if (res == BPS.BPS_FAILURE)
                 {
-                    //Util.ThrowExceptionForLastErrno(false);
-                    return null;
+                    Util.ThrowExceptionForLastErrno(false);
                 }
                 return res;
             }
@@ -258,18 +261,11 @@ namespace BlackBerry.BPS.Invoke
             set
             {
                 Verify();
-                if (value.HasValue)
+                if (value <= 0)
                 {
-                    if (value.Value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException("Interval", value.Value, "Interval cannot be less then zero");
-                    }
-                    navigator_invoke_recurrence_rule_set_interval(handle, value.Value);
+                    throw new ArgumentOutOfRangeException("Interval", value, "Interval cannot be less then, or equal to, zero");
                 }
-                else
-                {
-                    navigator_invoke_recurrence_rule_set_interval(handle, 0);
-                }
+                navigator_invoke_recurrence_rule_set_interval(handle, value);
             }
         }
 

@@ -441,6 +441,14 @@ namespace BlackBerry.BPS.Invoke
         /// <summary>
         /// Send the timer registration to service.
         /// </summary>
+        /// <remarks>Currently, you can register a maximum of 5 timers, of which only 1 can be a 
+        /// recurrent timer. If you attempt to register a specific timer for a time that
+        /// occurs within 6 minutes of a previously registered timer, the registration
+        /// will fail.
+        /// 
+        /// Specific timers are automatically deregistered when they expire. You can deregister
+        /// them prior to expiration by calling <see cref="Action"/> with TimerAction.Unregister.
+        /// You must deregister recurrence timers.</remarks>
         /// <returns>true on success, false if otherwise.</returns>
         [AvailableSince(10, 3)]
         public bool Send()

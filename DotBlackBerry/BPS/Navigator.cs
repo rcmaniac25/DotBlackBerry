@@ -261,6 +261,11 @@ namespace BlackBerry.BPS
         [AvailableSince(10, 3)]
         InvokeTimerRegistration = 0x2d,
         /// <summary>
+        /// Indicates the user pressed a system key.
+        /// </summary>
+        [AvailableSince(10, 3, 1)]
+        SystemKeyPress = 0x2e,
+        /// <summary>
         /// Indicates that the event is not any of the above event types. It could be a custom event.
         /// </summary>
         [AvailableSince(10, 0)]
@@ -474,6 +479,29 @@ namespace BlackBerry.BPS
         /// </summary>
         [AvailableSince(10, 0)]
         Fade = 3
+    }
+
+    /// <summary>
+    /// Navigator system keys.
+    /// </summary>
+    [AvailableSince(10, 3, 1)]
+    public enum SystemKey : int
+    {
+        /// <summary>
+        /// The 'Send' system key.
+        /// </summary>
+        [AvailableSince(10, 3, 1)]
+        Send = 0,
+        /// <summary>
+        /// The 'End' system key.
+        /// </summary>
+        [AvailableSince(10, 3, 1)]
+        End = 1,
+        /// <summary>
+        /// The 'Back' system key.
+        /// </summary>
+        [AvailableSince(10, 3, 1)]
+        Back = 2
     }
 
     #endregion
@@ -725,6 +753,15 @@ namespace BlackBerry.BPS
 
         [DllImport(BPS.BPS_LIBRARY)]
         private static extern int navigator_set_lockscreen_wallpaper([MarshalAs(UnmanagedType.LPStr)]string filepath);
+
+        [DllImport(BPS.BPS_LIBRARY)]
+        private static extern int navigator_event_get_syskey_key(IntPtr ev);
+
+        [DllImport(BPS.BPS_LIBRARY)]
+        private static extern IntPtr navigator_event_get_syskey_id(IntPtr ev);
+
+        [DllImport(BPS.BPS_LIBRARY)]
+        private static extern int navigator_syskey_press_response([MarshalAs(UnmanagedType.LPStr)]string id, bool will_handle);
 
         #endregion
 
@@ -1780,6 +1817,53 @@ namespace BlackBerry.BPS
             return Mono.Unix.UnixMarshal.PtrToString(navigator_event_get_card_closed_data(ev.DangerousGetHandle()));
         }
 
+        /// <summary>
+        /// Get the system key from a navigator system key event.
+        /// </summary>
+        /// <param name="ev">The SystemKeyPress event to extract the system key from.</param>
+        /// <returns>The system key from the event.</returns>
+        [AvailableSince(10, 3, 1)]
+        public static SystemKey GetSystemKey(BPSEvent ev)
+        {
+            if (ev.Domain != Domain)
+            {
+                throw new ArgumentException("BPSEvent is not a navigator event");
+            }
+            if ((NavigatorEvents)ev.Code != NavigatorEvents.SystemKeyPress)
+            {
+                throw new ArgumentException("BPSEvent is not a system key press event");
+            }
+            Util.GetBPSOrException();
+            var res = navigator_event_get_syskey_key(ev.DangerousGetHandle());
+            if (res == BPS.BPS_FAILURE)
+            {
+                Util.ThrowExceptionForLastErrno();
+            }
+            return (SystemKey)res;
+        }
+
+        /// <summary>
+        /// Get the system key id from a navigator system key event.
+        /// </summary>
+        /// The ID extracted from the event with this function should be passed into <see cref="WillHandleSystemKey"/> which
+        /// should be called as soon as possible after recieving the SystemKeyPress event.
+        /// <param name="ev">The SystemKeyPress event to extract the system key id from.</param>
+        /// <returns>The system key id from the event.</returns>
+        [AvailableSince(10, 3, 1)]
+        public static string GetSystemKeyID(BPSEvent ev)
+        {
+            if (ev.Domain != Domain)
+            {
+                throw new ArgumentException("BPSEvent is not a navigator event");
+            }
+            if ((NavigatorEvents)ev.Code != NavigatorEvents.SystemKeyPress)
+            {
+                throw new ArgumentException("BPSEvent is not a system key press event");
+            }
+            Util.GetBPSOrException();
+            return Marshal.PtrToStringAnsi(navigator_event_get_syskey_id(ev.DangerousGetHandle()));
+        }
+
         #endregion
 
         /// <summary>
@@ -2016,6 +2100,19 @@ namespace BlackBerry.BPS
         {
             Util.GetBPSOrException();
             return navigator_set_lockscreen_wallpaper(file) == BPS.BPS_SUCCESS;
+        }
+
+        /// <summary>
+        /// Indicate whether the app handles a system key event.
+        /// </summary>
+        /// <param name="id">The id that was returned in the NavigatorEvents.SystemKeyPress event.</param>
+        /// <param name="willHandle">True if your app will handle the event, false if it will not handle the event.</param>
+        /// <returns>true on success, false if otherwise.</returns>
+        [AvailableSince(10, 3, 1)]
+        public static bool WillHandleSystemKey(string id, bool willHandle)
+        {
+            Util.GetBPSOrException();
+            return navigator_syskey_press_response(id, willHandle) == BPS.BPS_SUCCESS;
         }
     }
 }
