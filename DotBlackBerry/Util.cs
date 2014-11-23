@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.IO;
-#if BLACKBERRY_USE_SERIALIZATION
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-#else
 using System.Runtime.InteropServices;
-#endif
 
 using Mono.Unix.Native;
 
@@ -248,6 +245,103 @@ namespace BlackBerry
 
         #region Serialize .Net Objects
 
+        //TODO: replace binary serializer so it will produce raw data... unless GCHandle can do that easily and recursivly (which I don't think it can)
+
+        #region Raw Serialize
+
+        /// <summary>
+        /// Serialize an object to a pointer using serialization classes.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="size">The size of the serialized data.</param>
+        /// <returns>The data, or IntPtr.Zero if obj is null or an error occurs.</returns>
+        public static IntPtr RawSerializeToPointer(object obj, out uint size)
+        {
+            size = 0;
+            if (obj == null)
+            {
+                return IntPtr.Zero;
+            }
+
+            // Serialize
+            var formatter = new BinaryFormatter();
+            var ms = new MemoryStream();
+            try
+            {
+                formatter.Serialize(ms, obj);
+            }
+            catch
+            {
+                return IntPtr.Zero;
+            }
+
+            // Check data length
+            if (ms.Length > Int32.MaxValue)
+            {
+                return IntPtr.Zero;
+            }
+
+            // Copy to pointer
+            size = (uint)ms.Length;
+            var data = ms.GetBuffer();
+            var ptr = Syscall.malloc((ulong)ms.Length);
+            Marshal.Copy(data, 0, ptr, (int)ms.Length);
+            return ptr;
+        }
+
+        /// <summary>
+        /// Deserialize an object from a pointer.
+        /// </summary>
+        /// <param name="ptr">The pointer to deserialize.</param>
+        /// <param name="size">The size of the data to deserialize.</param>
+        /// <returns>The object or null if the pointer is IntPtr.Zero or an error has occured.</returns>
+        public static object RawDeserializeFromPointer(IntPtr ptr, uint size)
+        {
+            if (ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            if (size > Int32.MaxValue)
+            {
+                return null;
+            }
+
+            // Get data
+            var data = new byte[size];
+            Marshal.Copy(ptr, data, 0, (int)size);
+            var ms = new MemoryStream(data, false);
+
+            // Deserialize
+            var formatter = new BinaryFormatter();
+            try
+            {
+                return formatter.Deserialize(ms);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Free the raw serialized pointer.
+        /// </summary>
+        /// <param name="ptr">The pointer to free.</param>
+        /// <returns>true if the pointer was freed, false if otherwise.</returns>
+        public static bool FreeRawSerializePointer(IntPtr ptr)
+        {
+            if (ptr == IntPtr.Zero)
+            {
+                return true;
+            }
+            Syscall.free(ptr);
+            return true;
+        }
+
+        #endregion
+
+        #region Normal Serialize
+
 #if !BLACKBERRY_USE_SERIALIZATION
         private static IDictionary<IntPtr, IntPtr> dataPtrToPointer = new ConcurrentDictionary<IntPtr, IntPtr>();
 #endif
@@ -293,7 +387,7 @@ namespace BlackBerry
             var data = ms.GetBuffer();
             var ptr = Syscall.malloc((ulong)ms.Length + sizeof(int));
             Marshal.WriteInt32(ptr, (int)ms.Length);
-            Marshal.Copy(data, 0, ptr, (int)ms.Length);
+            Marshal.Copy(data, sizeof(int), ptr, (int)ms.Length);
             return ptr;
 #else
             var handle = GCHandle.Alloc(obj, type);
@@ -376,13 +470,13 @@ namespace BlackBerry
         /// <returns>true if the pointer was freed, false if otherwise.</returns>
         public static bool FreeSerializePointer(IntPtr ptr)
         {
+#if BLACKBERRY_USE_SERIALIZATION
+            return FreeRawSerializePointer(ptr);
+#else
             if (ptr == IntPtr.Zero)
             {
                 return true;
             }
-#if BLACKBERRY_USE_SERIALIZATION
-            Syscall.free(ptr);
-#else
             var pointer = GetPointerForPotentialPinnedData(ptr);
             if (pointer == IntPtr.Zero)
             {
@@ -390,9 +484,11 @@ namespace BlackBerry
             }
             GCHandle.FromIntPtr(pointer).Free();
             dataPtrToPointer.Remove(ptr);
-#endif
             return true;
+#endif
         }
+
+        #endregion
 
         #endregion
 

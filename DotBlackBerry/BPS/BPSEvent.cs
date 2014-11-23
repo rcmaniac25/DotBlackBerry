@@ -296,13 +296,12 @@ namespace BlackBerry.BPS
 
         private void CheckState()
         {
-            if (handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("BPSEvent");
-            }
             if (token.IsCancellationRequested)
             {
                 handle = IntPtr.Zero;
+            }
+            if (handle == IntPtr.Zero)
+            {
                 throw new ObjectDisposedException("BPSEvent");
             }
         }
@@ -319,7 +318,7 @@ namespace BlackBerry.BPS
         {
             get
             {
-                return handle != IntPtr.Zero;
+                return handle != IntPtr.Zero && !token.IsCancellationRequested;
             }
         }
 

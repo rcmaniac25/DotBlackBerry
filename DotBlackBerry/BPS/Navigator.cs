@@ -1398,6 +1398,7 @@ namespace BlackBerry.BPS
             switch ((NavigatorEvents)ev.Code)
             {
                 case NavigatorEvents.OrientationResult:
+                case NavigatorEvents.InvokeTarget: //XXX Not offically known if supported or not
                 case NavigatorEvents.InvokeTargetResult:
                 case NavigatorEvents.InvokeQueryResult:
                 case NavigatorEvents.InvokeViewerResult:
@@ -1510,11 +1511,11 @@ namespace BlackBerry.BPS
             {
                 throw new InvalidOperationException("Could not get extended data from event", exp);
             }
-            var dataLen = navigator_event_get_extended_data_length(evPtr);
             if (data == IntPtr.Zero)
             {
                 return null;
             }
+            var dataLen = navigator_event_get_extended_data_length(evPtr);
             var result = new byte[dataLen];
             Marshal.Copy(data, result, 0, (int)dataLen);
             return result;
