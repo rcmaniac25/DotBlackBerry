@@ -24,6 +24,9 @@ namespace BlackBerry.BPS.Invoke
         /// </summary>
         [AvailableSince(10, 0)]
         Card = 0x02,
+
+        // There is also type viewer, but it's not expected that .BlackBerry will run on an OS that uses it
+
         /// <summary>
         /// Indicates that the target is a service. The meaning of a service value is reserved for future use.
         /// </summary>
@@ -39,29 +42,6 @@ namespace BlackBerry.BPS.Invoke
         /// </summary>
         [AvailableSince(10, 3)]
         Headless = 0x40
-    }
-
-    /// <summary>
-    /// The possible invocation query action type values.
-    /// </summary>
-    [AvailableSince(10, 0)]
-    public enum InvokeQueryActionType : int
-    {
-        /// <summary>
-        /// Indicates that the query action type is unspecified.
-        /// </summary>
-        [AvailableSince(10, 0)]
-        Unspecifier = 0,
-        /// <summary>
-        /// Indicates that the query results are filtered to only include those that support menu actions. Menu actions have a defined icon and label associated with them.
-        /// </summary>
-        [AvailableSince(10, 0)]
-        Menu = 1,
-        /// <summary>
-        /// Indicates that the query results include all viable targets regardless of their action type(s).
-        /// </summary>
-        [AvailableSince(10, 0)]
-        All = 2
     }
 
     /// <summary>
@@ -482,7 +462,7 @@ namespace BlackBerry.BPS.Invoke
         
 #if BLACKBERRY_INTERNAL_FUNCTIONS
         /// <summary>
-        /// Get or set the perimeter from the invocation.
+        /// Get or set the perimeter of the invocation.
         /// </summary>
 #else
         /// <summary>
@@ -629,11 +609,23 @@ namespace BlackBerry.BPS.Invoke
         [AvailableSince(10, 0)]
         public static Invocation GetInvocation(BPSEvent ev)
         {
-            //XXX docs say to call this AFTER calling navigator_invoke_event_get_invocation, but that seems odd...
-            // Handles domain, type, and BPS checks for us
-            var error = Navigator.GetError(ev);
-            if (error != null)
+            if (ev.Domain != Navigator.Domain)
             {
+                throw new ArgumentException("BPSEvent is not a navigator event");
+            }
+            if ((NavigatorEvents)ev.Code != NavigatorEvents.InvokeTarget)
+            {
+                throw new ArgumentException("BPSEvent is not a invoke target event");
+            }
+            var ptr = ev.DangerousGetHandle();
+            var res = navigator_invoke_event_get_invocation(ptr);
+            if (res == IntPtr.Zero)
+            {
+                var error = Marshal.PtrToStringAnsi(Navigator.navigator_event_get_err(ptr));
+                if (error == null)
+                {
+                    throw new InvalidOperationException("An unkown error occured while trying to get the invocation.");
+                }
                 switch (error.ToUpperInvariant())
                 {
                     case "INVOKE_NO_TARGET_ERROR":
@@ -647,11 +639,6 @@ namespace BlackBerry.BPS.Invoke
                     default:
                         throw new InvalidOperationException("An error occured while trying to get the invocation.", new Exception(error));
                 }
-            }
-            var res = navigator_invoke_event_get_invocation(ev.DangerousGetHandle());
-            if (res == IntPtr.Zero)
-            {
-                Util.ThrowExceptionForLastErrno();
             }
             return new Invocation(res, ev);
         }

@@ -608,7 +608,7 @@ namespace BlackBerry.BPS
         private static extern IntPtr navigator_event_get_id(IntPtr ev);
 
         [DllImport(BPS.BPS_LIBRARY)]
-        private static extern IntPtr navigator_event_get_err(IntPtr ev);
+        internal static extern IntPtr navigator_event_get_err(IntPtr ev);
 
         [DllImport(BPS.BPS_LIBRARY)]
         private static extern void navigator_orientation_check_response(IntPtr ev, bool will_rotate);
@@ -1398,7 +1398,6 @@ namespace BlackBerry.BPS
             switch ((NavigatorEvents)ev.Code)
             {
                 case NavigatorEvents.OrientationResult:
-                case NavigatorEvents.InvokeTarget: //XXX Not offically known if supported or not
                 case NavigatorEvents.InvokeTargetResult:
                 case NavigatorEvents.InvokeQueryResult:
                 case NavigatorEvents.InvokeViewerResult:
