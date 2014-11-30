@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace BlackBerry.BPS.Invoke
 {
+    #region Enums
+
     /// <summary>
     /// The possible invocation target types.
     /// </summary>
@@ -101,27 +103,137 @@ namespace BlackBerry.BPS.Invoke
     }
 
     /// <summary>
-    /// The possible directions of movement for an invoke list cursor.
+    /// Common invocation actions. Generally, anything that starts with "bb.action".
     /// </summary>
-    [AvailableSince(10, 2)]
-    public enum InvokeListCursorDirection : int
+    public enum CommonInvokeActions
     {
         /// <summary>
-        /// Indicates that the cursor's direction is determined by the application.
+        /// An unknown, or custom action that isn't avaliable within this enumeration.
         /// </summary>
-        [AvailableSince(10, 2)]
-        Unspecified = 0,
+        Unknown,
         /// <summary>
-        /// Indicates that the cursor's direction is towards the next list item.
+        /// bb.action.ADD
         /// </summary>
-        [AvailableSince(10, 2)]
-        Next = 1,
+        Add,
         /// <summary>
-        /// Indicates that the cursor's direction is towards the previous list item.
+        /// bb.action.ADDTOCONTACT
         /// </summary>
-        [AvailableSince(10, 2)]
-        Previous = 2
+        AddToContact,
+        /// <summary>
+        /// bb.action.BBMCHAT
+        /// </summary>
+        BBMChat,
+        /// <summary>
+        /// bb.action.INVITEBBM
+        /// </summary>
+        BBMInvite,
+        /// <summary>
+        /// bb.action.BBMCONF
+        /// </summary>
+        BBMMultiPersonChat,
+        /// <summary>
+        /// bb.action.OPENBBMCHANNEL
+        /// </summary>
+        BBMOpenChannel,
+        /// <summary>
+        /// bb.action.CAPTURE
+        /// </summary>
+        Capture,
+        /// <summary>
+        /// bb.action.CHAT
+        /// </summary>
+        Chat,
+        /// <summary>
+        /// bb.action.COMPOSE
+        /// </summary>
+        Compose,
+        /// <summary>
+        /// bb.action.CREATE
+        /// </summary>
+        Create,
+        /// <summary>
+        /// bb.action.DELETE
+        /// </summary>
+        Delete,
+        /// <summary>
+        /// bb.action.DIAL
+        /// </summary>
+        Dial,
+        /// <summary>
+        /// bb.action.DIRECT_RESPONSE
+        /// </summary>
+        DirectResponse,
+        /// <summary>
+        /// bb.action.EDIT
+        /// </summary>
+        Edit,
+        /// <summary>
+        /// bb.action.EMERGENCY_CALL
+        /// </summary>
+        EmergencyCall,
+        /// <summary>
+        /// bb.action.FORWARD
+        /// </summary>
+        Forward,
+        /// <summary>
+        /// bb.action.INVITE
+        /// </summary>
+        Invite,
+        /// <summary>
+        /// bb.action.OPEN
+        /// </summary>
+        Open,
+        /// <summary>
+        /// bb.action.PUSH
+        /// </summary>
+        Push,
+        /// <summary>
+        /// bb.action.REPLY
+        /// </summary>
+        Reply,
+        /// <summary>
+        /// bb.action.REPLYALL
+        /// </summary>
+        ReplyAll,
+        /// <summary>
+        /// bb.action.SEARCH.EXTENDED
+        /// </summary>
+        SearchExtended,
+        /// <summary>
+        /// bb.action.SEARCH.SOURCE
+        /// </summary>
+        SearchSource,
+        /// <summary>
+        /// bb.action.SENDEMAIL
+        /// </summary>
+        SendEmail,
+        /// <summary>
+        /// bb.action.SENDTEXT
+        /// </summary>
+        SendText,
+        /// <summary>
+        /// bb.action.SET
+        /// </summary>
+        Set,
+        /// <summary>
+        /// bb.action.SETUP
+        /// </summary>
+        Setup,
+        /// <summary>
+        /// bb.action.SHARE
+        /// </summary>
+        Share,
+        /// <summary>
+        /// Action for when a <see cref="BlackBerry.BPS.Invoke.Timer">Timer</see> triggers. bb.action.system.TIMER_FIRED
+        /// </summary>
+        TimerFired,
+        /// <summary>
+        /// bb.action.VIEW
+        /// </summary>
+        View
     }
+
+    #endregion
 
     /// <summary>
     /// Device and application invocation.
@@ -262,9 +374,11 @@ namespace BlackBerry.BPS.Invoke
             {
                 if (handle != IntPtr.Zero && ((ev == null) ^ ev.IsValid))
                 {
+                    //XXX May not be 100% valid... might be better to remove it entirely...
                     return navigator_invoke_invocation_get_target(handle) != IntPtr.Zero ||
                         navigator_invoke_invocation_get_action(handle) != IntPtr.Zero ||
-                        navigator_invoke_invocation_get_type(handle) != IntPtr.Zero;
+                        navigator_invoke_invocation_get_type(handle) != IntPtr.Zero ||
+                        navigator_invoke_invocation_get_uri(handle) != IntPtr.Zero;
                 }
                 return false;
             }
@@ -337,7 +451,7 @@ namespace BlackBerry.BPS.Invoke
         }
 
         /// <summary>
-        /// Get or set the action from the invocation.
+        /// Get or set the action for the invocation.
         /// </summary>
         [AvailableSince(10, 0)]
         public string Action
@@ -357,8 +471,20 @@ namespace BlackBerry.BPS.Invoke
             }
         }
 
-        //TODO: Make sure common Actions have an enum
-        //-make sure bb.action.system.TIMER_FIRED is on there (when timer fires)
+        /// <summary>
+        /// Get or set the action for the invocation using a common action.
+        /// </summary>
+        public CommonInvokeActions CommonAction
+        {
+            get
+            {
+                return ParseCommonAction(Action);
+            }
+            set
+            {
+                Action = TranslateCommonAction(value);
+            }
+        }
 
         /// <summary>
         /// Get or set the type of the invocation.
@@ -431,6 +557,8 @@ namespace BlackBerry.BPS.Invoke
         [AvailableSince(10, 0)]
         public object Data
         {
+            //XXX Is this even possible? What if the app recieves just some simple ASCII? Even if a single-op deserialization can occur, it would have to evaluate and test to find out what it is.
+            //XXX Perhaps just a byte array to make life easier, and offer serialization options to the user? What about other areas where data is an accepted property?
             [AvailableSince(10, 0)]
             get
             {
@@ -531,6 +659,7 @@ namespace BlackBerry.BPS.Invoke
         /// <summary>
         /// Get or set the list id to associate with the invocation.
         /// </summary>
+        /// <seealso cref="InvokeList"/>
         [AvailableSince(10, 2)]
         public int? ListID
         {
@@ -549,9 +678,9 @@ namespace BlackBerry.BPS.Invoke
             set
             {
                 Verify("ListID");
-                if (value.HasValue && value.Value == 0)
+                if (value.HasValue && value.Value <= 0)
                 {
-                    throw new ArgumentException("List ID cannot be zero.");
+                    throw new ArgumentException("List ID cannot be less than or equal to zero.", "ListID");
                 }
                 navigator_invoke_invocation_set_list_id(handle, value.HasValue ? value.Value : 0);
             }
@@ -690,5 +819,155 @@ namespace BlackBerry.BPS.Invoke
                 return new Uri(str.Value);
             }
         }
+
+        #region Common Actions
+
+        private static CommonInvokeActions ParseCommonAction(string action)
+        {
+            if (string.IsNullOrWhiteSpace(action))
+            {
+                return CommonInvokeActions.Unknown;
+            }
+            switch (action.ToLower())
+            {
+                case "bb.action.add":
+                    return CommonInvokeActions.Add;
+                case "bb.action.addtocontact":
+                    return CommonInvokeActions.AddToContact;
+                case "bb.action.bbmchat":
+                    return CommonInvokeActions.BBMChat;
+                case "bb.action.invitebbm":
+                    return CommonInvokeActions.BBMInvite;
+                case "bb.action.bbmconf":
+                    return CommonInvokeActions.BBMMultiPersonChat;
+                case "bb.action.openbbmchannel":
+                    return CommonInvokeActions.BBMOpenChannel;
+                case "bb.action.capture":
+                    return CommonInvokeActions.Capture;
+                case "bb.action.chat":
+                    return CommonInvokeActions.Chat;
+                case "bb.action.compose":
+                    return CommonInvokeActions.Compose;
+                case "bb.action.create":
+                    return CommonInvokeActions.Create;
+                case "bb.action.delete":
+                    return CommonInvokeActions.Delete;
+                case "bb.action.dial":
+                    return CommonInvokeActions.Dial;
+                case "bb.action.direct_response":
+                    return CommonInvokeActions.DirectResponse;
+                case "bb.action.edit":
+                    return CommonInvokeActions.Edit;
+                case "bb.action.emergency_call":
+                    return CommonInvokeActions.EmergencyCall;
+                case "bb.action.forward":
+                    return CommonInvokeActions.Forward;
+                case "bb.action.invite":
+                    return CommonInvokeActions.Invite;
+                case "bb.action.open":
+                    return CommonInvokeActions.Open;
+                case "bb.action.push":
+                    return CommonInvokeActions.Push;
+                case "bb.action.reply":
+                    return CommonInvokeActions.Reply;
+                case "bb.action.replyall":
+                    return CommonInvokeActions.ReplyAll;
+                case "bb.action.search.extended":
+                    return CommonInvokeActions.SearchExtended;
+                case "bb.action.search.source":
+                    return CommonInvokeActions.SearchSource;
+                case "bb.action.sendemail":
+                    return CommonInvokeActions.SendEmail;
+                case "bb.action.sendtext":
+                    return CommonInvokeActions.SendText;
+                case "bb.action.set":
+                    return CommonInvokeActions.Set;
+                case "bb.action.setup":
+                    return CommonInvokeActions.Setup;
+                case "bb.action.share":
+                    return CommonInvokeActions.Share;
+                case "bb.action.system.timer_fired":
+                    return CommonInvokeActions.TimerFired;
+                case "bb.action.view":
+                    return CommonInvokeActions.View;
+                default:
+                    return CommonInvokeActions.Unknown;
+            }
+        }
+
+        private static string TranslateCommonAction(CommonInvokeActions action)
+        {
+            if (action == CommonInvokeActions.Unknown || !action.IsValidValue())
+            {
+                throw new ArgumentException(action == CommonInvokeActions.Unknown ? "Cannot be \"Unknown\"" : "Unknown action", "CommonAction");
+            }
+            switch (action)
+            {
+                case CommonInvokeActions.Add:
+                    return "bb.action.ADD";
+                case CommonInvokeActions.AddToContact:
+                    return "bb.action.ADDTOCONTACT";
+                case CommonInvokeActions.BBMChat:
+                    return "bb.action.BBMCHAT";
+                case CommonInvokeActions.BBMInvite:
+                    return "bb.action.INVITEBBM";
+                case CommonInvokeActions.BBMMultiPersonChat:
+                    return "bb.action.BBMCONF";
+                case CommonInvokeActions.BBMOpenChannel:
+                    return "bb.action.OPENBBMCHANNEL";
+                case CommonInvokeActions.Capture:
+                    return "bb.action.CAPTURE";
+                case CommonInvokeActions.Chat:
+                    return "bb.action.CHAT";
+                case CommonInvokeActions.Compose:
+                    return "bb.action.COMPOSE";
+                case CommonInvokeActions.Create:
+                    return "bb.action.CREATE";
+                case CommonInvokeActions.Delete:
+                    return "bb.action.DELETE";
+                case CommonInvokeActions.Dial:
+                    return "bb.action.DIAL";
+                case CommonInvokeActions.DirectResponse:
+                    return "bb.action.DIRECT_RESPONSE";
+                case CommonInvokeActions.Edit:
+                    return "bb.action.EDIT";
+                case CommonInvokeActions.EmergencyCall:
+                    return "bb.action.EMERGENCY_CALL";
+                case CommonInvokeActions.Forward:
+                    return "bb.action.FORWARD";
+                case CommonInvokeActions.Invite:
+                    return "bb.action.INVITE";
+                case CommonInvokeActions.Open:
+                    return "bb.action.OPEN";
+                case CommonInvokeActions.Push:
+                    return "bb.action.PUSH";
+                case CommonInvokeActions.Reply:
+                    return "bb.action.REPLY";
+                case CommonInvokeActions.ReplyAll:
+                    return "bb.action.REPLYALL";
+                case CommonInvokeActions.SearchExtended:
+                    return "bb.action.SEARCH.EXTENDED";
+                case CommonInvokeActions.SearchSource:
+                    return "bb.action.SEARCH.SOURCE";
+                case CommonInvokeActions.SendEmail:
+                    return "bb.action.SENDEMAIL";
+                case CommonInvokeActions.SendText:
+                    return "bb.action.SENDTEXT";
+                case CommonInvokeActions.Set:
+                    return "bb.action.SET";
+                case CommonInvokeActions.Setup:
+                    return "bb.action.SETUP";
+                case CommonInvokeActions.Share:
+                    return "bb.action.SHARE";
+                case CommonInvokeActions.TimerFired:
+                    return "bb.action.system.TIMER_FIRED";
+                case CommonInvokeActions.View:
+                    return "bb.action.VIEW";
+                default:
+                    return "Invalid action. Should not've gotten here. Please file a bug";
+            }
+        }
+
+        #endregion
     }
 }

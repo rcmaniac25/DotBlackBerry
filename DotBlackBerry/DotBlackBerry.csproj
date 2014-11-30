@@ -69,7 +69,12 @@
     <Compile Include="BPS\Dialog\PromptDialog.cs" />
     <Compile Include="BPS\Dialog\Toasts.cs" />
     <Compile Include="BPS\Invoke\Invocation.cs" />
+    <Compile Include="BPS\Invoke\InvokeFilters.cs" />
+    <Compile Include="BPS\Invoke\InvokeList.cs" />
     <Compile Include="BPS\Invoke\InvokeQuery.cs" />
+    <Compile Include="BPS\Invoke\InvokeQueryResult.cs" />
+    <Compile Include="BPS\Invoke\InvokeQueryTarget.cs" />
+    <Compile Include="BPS\Invoke\InvokeUtility.cs" />
     <Compile Include="BPS\Invoke\RecurrenceRule.cs" />
     <Compile Include="BPS\Invoke\Timer.cs" />
     <Compile Include="BPS\LED.cs" />

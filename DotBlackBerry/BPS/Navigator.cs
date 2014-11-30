@@ -605,7 +605,7 @@ namespace BlackBerry.BPS
         private static extern IntPtr navigator_event_get_data(IntPtr ev);
 
         [DllImport(BPS.BPS_LIBRARY)]
-        private static extern IntPtr navigator_event_get_id(IntPtr ev);
+        internal static extern IntPtr navigator_event_get_id(IntPtr ev);
 
         [DllImport(BPS.BPS_LIBRARY)]
         internal static extern IntPtr navigator_event_get_err(IntPtr ev);

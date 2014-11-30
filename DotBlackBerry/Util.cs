@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices;
+using System.Text;
 
 using Mono.Unix.Native;
 
@@ -516,6 +517,27 @@ namespace BlackBerry
                 arr[i] = Marshal.ReadInt32(handle, i * sizeof(int));
             }
             return arr;
+        }
+
+        /// <summary>
+        /// Copies all characters up to the first null character from an unmanaged UTF8 string to a managed String.
+        /// </summary>
+        /// <param name="handle">The address of the first character of the unmanaged string.</param>
+        /// <returns>A managed string that holds a copy of the unmanaged UTF8 string. If ptr is null, the method returns a null string.</returns>
+        public static string PtrToStringUTF8(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                return null;
+            }
+            var len = Mono.Unix.Native.Syscall.strlen(handle);
+            if (len == 0)
+            {
+                return string.Empty;
+            }
+            var data = new byte[len];
+            Marshal.Copy(handle, data, 0, data.Length);
+            return Encoding.UTF8.GetString(data);
         }
 
         #endregion
