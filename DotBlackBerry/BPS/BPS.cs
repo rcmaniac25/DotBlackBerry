@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using BlackBerry.Internal;
+
 namespace BlackBerry.BPS
 {
     /// <summary>
@@ -127,6 +129,12 @@ namespace BlackBerry.BPS
         private static extern int bps_remove_fd(int fd);
 
         [DllImport(BPS.BPS_LIBRARY)]
+        private static extern int bps_add_sigevent_handler(IntPtr sigevent, Func<IntPtr, int> sigevent_handler, IntPtr data);
+
+        [DllImport(BPS.BPS_LIBRARY)]
+        private static extern int bps_remove_sigevent_handler(IntPtr sigevent);
+
+        [DllImport(BPS.BPS_LIBRARY)]
         private static extern int bps_get_event(out IntPtr ev, int timeout_ms);
 
         #endregion
@@ -144,7 +152,7 @@ namespace BlackBerry.BPS
         private static int initBPScount = 0;
         private static ConcurrentSet<IntPtr> allocatedPointers = new ConcurrentSet<IntPtr>();
         private static ConcurrentSet<Action> cleanupFunctions = new ConcurrentSet<Action>();
-        private static IDictionary<IntPtr, IntPtr> fdToPointer = new ConcurrentDictionary<IntPtr, IntPtr>();
+        private static IDictionary<IntPtr, IntPtr> handleToStructPointer = new ConcurrentDictionary<IntPtr, IntPtr>();
 
         private bool canShutdown;
         private bool disposed;
@@ -311,7 +319,7 @@ namespace BlackBerry.BPS
                 }
             }
 
-            fdToPointer.Clear();
+            handleToStructPointer.Clear();
         }
 
         #region Functions
@@ -454,9 +462,9 @@ namespace BlackBerry.BPS
                     return BPS_SUCCESS;
                 }
             }
-            if (fdToPointer.ManuallyFindKey(ptr, out key))
+            if (handleToStructPointer.ManuallyFindKey(ptr, out key))
             {
-                fdToPointer.Remove(key);
+                handleToStructPointer.Remove(key);
             }
             allocatedPointers.Remove(ptr);
             Util.FreeSerializePointer(ptr);
@@ -468,6 +476,14 @@ namespace BlackBerry.BPS
             if (disposed)
             {
                 throw new ObjectDisposedException("BPS");
+            }
+            if (handle == null)
+            {
+                throw new ArgumentNullException("handle");
+            }
+            if (ioHandler == null)
+            {
+                throw new ArgumentNullException("ioHandler");
             }
             // Could probably just pass sender directly into the ioHandler instead of routing it through the HandleFileDescriptor function
             var genericCallback = new Func<object, BPSIO, object, bool>((s, e, d) => ioHandler((T)s, e, d));
@@ -481,7 +497,7 @@ namespace BlackBerry.BPS
             var success = bps_add_fd(fd.ToInt32(), ioEvents, HandleFileDescriptor, data) == BPS_SUCCESS;
             if (success)
             {
-                fdToPointer.Add(fd, data);
+                handleToStructPointer.Add(fd, data);
                 allocatedPointers.Add(data);
             }
             else
@@ -517,16 +533,20 @@ namespace BlackBerry.BPS
             {
                 throw new ObjectDisposedException("BPS");
             }
+            if (handle == null)
+            {
+                throw new ArgumentNullException("handle");
+            }
             if (handle.IsInvalid)
             {
                 throw new ArgumentException("Handle is invalid");
             }
             var pointer = handle.DangerousGetHandle();
             var success = bps_remove_fd(pointer.ToInt32()) == BPS_SUCCESS;
-            if (fdToPointer.ContainsKey(pointer) && success)
+            if (handleToStructPointer.ContainsKey(pointer) && success)
             {
-                var dataPtr = fdToPointer[pointer];
-                fdToPointer.Remove(pointer);
+                var dataPtr = handleToStructPointer[pointer];
+                handleToStructPointer.Remove(pointer);
                 allocatedPointers.Remove(dataPtr);
                 Util.FreeSerializePointer(dataPtr);
             }
@@ -537,8 +557,123 @@ namespace BlackBerry.BPS
 
         #region Add/Remove sigevent
 
-        //TODO bps_add_sigevent_handler
-        //TODO bps_remove_sigevent_handler
+        private static int HandleSigevent(IntPtr ptr)
+        {
+            var parsedData = Util.DeserializeFromPointer(ptr);
+            IntPtr key;
+            if (parsedData != null)
+            {
+                var continueExec = true;
+                var parts = parsedData as object[];
+                try
+                {
+                    if (parts != null)
+                    {
+                        var handler = parts[0] as Func<object, bool>;
+                        continueExec = handler(parts[1]);
+                    }
+                    else
+                    {
+                        var handler = parsedData as Func<object, bool>;
+                        continueExec = handler(null);
+                    }
+                }
+                catch
+                {
+                    //TODO: log error
+                    continueExec = false;
+                }
+                if (continueExec)
+                {
+                    return BPS_SUCCESS;
+                }
+            }
+            if (handleToStructPointer.ManuallyFindKey(ptr, out key))
+            {
+                handleToStructPointer.Remove(key);
+            }
+            allocatedPointers.Remove(ptr);
+            Util.FreeSerializePointer(ptr);
+            return BPS_FAILURE;
+        }
+
+        /// <summary>
+        /// Add a sigevent handler to the active channel.
+        /// </summary>
+        /// <param name="sigevent">An allocated sigevent that will be filled in by this function.</param>
+        /// <param name="sigeventHandler">
+        /// The sigevent callback that gets fired whenever the channel receives the corresponding sigevent. If the function returns false, than it is removed from the active channel.
+        /// </param>
+        /// <param name="handlerData">Service specific data that will be passed into every call to <paramref name="sigeventHandler"/>.</param>
+        /// <returns>true if the sigevent handler was successfully registered, and sigevent was filled in. false if otherwise.</returns>
+        public bool AddSigeventHandler(SafeSigeventHandle sigevent, Func<object, bool> sigeventHandler, object handlerData = null)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
+            if (sigevent == null)
+            {
+                throw new ArgumentNullException("sigevent");
+            }
+            if (sigevent.IsInvalid)
+            {
+                throw new ArgumentException("Sigevent is invalid");
+            }
+            if (sigeventHandler == null)
+            {
+                throw new ArgumentNullException("sigeventHandler");
+            }
+            var toSerialize = handlerData == null ? sigeventHandler : (object)new object[] { sigeventHandler, handlerData };
+            var data = Util.SerializeToPointer(toSerialize);
+            if (data == IntPtr.Zero)
+            {
+                return false;
+            }
+            var handle = sigevent.DangerousGetHandle();
+            var success = bps_add_sigevent_handler(handle, HandleSigevent, data) == BPS_SUCCESS;
+            if (success)
+            {
+                handleToStructPointer.Add(handle, data);
+                allocatedPointers.Add(data);
+            }
+            else
+            {
+                Util.FreeSerializePointer(data);
+            }
+            return success;
+        }
+        
+        /// <summary>
+        /// Remove the sigevent handler from the active channel.
+        /// </summary>
+        /// <param name="sigevent">he sigevent that was filled in by a call to <see cref="AddSigeventHandler"/>.</param>
+        /// <returns>true if the sigevent handler was successfully removed from the channel, false if otherwise.</returns>
+        public bool RemoveSigeventHandler(SafeSigeventHandle sigevent)
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException("BPS");
+            }
+            if (sigevent == null)
+            {
+                throw new ArgumentNullException("sigevent");
+            }
+            if (sigevent.IsInvalid)
+            {
+                throw new ArgumentException("Sigevent is invalid");
+            }
+            var pointer = sigevent.DangerousGetHandle();
+            var success = bps_remove_sigevent_handler(pointer) == BPS_SUCCESS;
+            if (handleToStructPointer.ContainsKey(pointer) && success)
+            {
+                var dataPtr = handleToStructPointer[pointer];
+                handleToStructPointer.Remove(pointer);
+                allocatedPointers.Remove(dataPtr);
+                Util.FreeSerializePointer(dataPtr);
+            }
+            return success;
+        }
 
         #endregion
 

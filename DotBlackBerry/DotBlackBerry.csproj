@@ -89,6 +89,7 @@
     <Compile Include="Camera\CameraException.cs" />
     <Compile Include="ConcurrentSet.cs" />
     <Compile Include="Internal\Config.cs" />
+    <Compile Include="Internal\SafeSigeventHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiredPermissionAttribute.cs" />
     <Compile Include="Screen\ScreenContext.cs" />
