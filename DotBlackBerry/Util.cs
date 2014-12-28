@@ -25,10 +25,11 @@ namespace BlackBerry
         /// </summary>
         /// <param name="major">The major version that needs to exist.</param>
         /// <param name="minor">The minor version that needs to exist.</param>
+        /// <param name="build">The build version that needs to exist.</param>
         /// <returns>true if it can run, false if otherwise.</returns>
-        public static bool IsCapableOfRunning(int major, int minor = 0)
+        public static bool IsCapableOfRunning(int major, int minor = 0, int build = 0)
         {
-            return IsCapableOfRunning(new Version(major, minor));
+            return IsCapableOfRunning(new Version(major, minor, build));
         }
 
         /// <summary>
@@ -56,10 +57,11 @@ namespace BlackBerry
         /// </summary>
         /// <param name="major">The major version that needs to exist.</param>
         /// <param name="minor">The minor version that needs to exist.</param>
+        /// <param name="build">The build version that needs to exist.</param>
         /// <param name="message">Any message to state about the exception.</param>
-        public static void ThrowIfUnsupported(int major, int minor = 0, string message = null)
+        public static void ThrowIfUnsupported(int major, int minor = 0, int build = 0, string message = null)
         {
-            ThrowIfUnsupported(new Version(major, minor), message);
+            ThrowIfUnsupported(new Version(major, minor, build), message);
         }
 
         /// <summary>

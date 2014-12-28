@@ -30,6 +30,78 @@ namespace BlackBerry
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
     public class AvailableSinceAttribute : Attribute
     {
+        #region Static version tests
+
+#if BLACKBERRY_STATIC_VERSION_TESTS
+
+        /// <summary>
+        /// BlackBerry 10 OS is at least 10.0
+        /// </summary>
+        public static bool IsAtLeastOS_10_0 { get; private set; }
+        /// <summary>
+        /// BlackBerry 10 OS is at least 10.1
+        /// </summary>
+        public static bool IsAtLeastOS_10_1 { get; private set; }
+        /// <summary>
+        /// BlackBerry 10 OS is at least 10.2
+        /// </summary>
+        public static bool IsAtLeastOS_10_2 { get; private set; }
+        /// <summary>
+        /// BlackBerry 10 OS is at least 10.2.1
+        /// </summary>
+        public static bool IsAtLeastOS_10_2_1 { get; private set; }
+        /// <summary>
+        /// BlackBerry 10 OS is at least 10.3
+        /// </summary>
+        public static bool IsAtLeastOS_10_3 { get; private set; }
+        /// <summary>
+        /// BlackBerry 10 OS is at least 10.3.1
+        /// </summary>
+        public static bool IsAtLeastOS_10_3_1 { get; private set; }
+
+        static AvailableSinceAttribute()
+        {
+            var version = BlackBerry.BPS.DeviceInfo.OSVersion.Version;
+            if (version.Major > 10)
+            {
+                IsAtLeastOS_10_0 = true;
+                IsAtLeastOS_10_1 = true;
+                IsAtLeastOS_10_2 = true;
+                IsAtLeastOS_10_2_1 = true;
+                IsAtLeastOS_10_3 = true;
+                IsAtLeastOS_10_3_1 = true;
+            }
+            else
+            {
+                // Eek, this is ugly...
+                if (version.Minor >= 3)
+                {
+                    if (version.Minor > 3 || version.Build >= 1)
+                    {
+                        IsAtLeastOS_10_3_1 = true;
+                    }
+                    IsAtLeastOS_10_3 = true;
+                }
+                if (version.Minor >= 2)
+                {
+                    if (version.Minor > 2 || version.Build >= 1)
+                    {
+                        IsAtLeastOS_10_2_1 = true;
+                    }
+                    IsAtLeastOS_10_2 = true;
+                }
+                if (version.Minor >= 1)
+                {
+                    IsAtLeastOS_10_1 = true;
+                }
+                IsAtLeastOS_10_0 = true;
+            }
+        }
+
+#endif
+
+        #endregion
+
         /// <summary>
         /// Get when a member has been supported since.
         /// </summary>

@@ -79,6 +79,7 @@
     <Compile Include="BPS\Invoke\Timer.cs" />
     <Compile Include="BPS\LED.cs" />
     <Compile Include="BPS\Navigator.cs" />
+    <Compile Include="BPS\PaymentService.cs" />
     <Compile Include="BPS\ScreenCapture.cs" />
     <Compile Include="BPS\WindowCover.cs" />
     <Compile Include="BPS\ScreenEvent.cs" />

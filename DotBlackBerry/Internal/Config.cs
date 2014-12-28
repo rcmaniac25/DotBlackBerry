@@ -28,7 +28,11 @@ namespace BlackBerry.Internal
         /// <summary>
         /// BPS GetEvent returns a BPSEvent on success, and null on timeout. This changes it so it returns a BPSEvent on success, and throws a TimeoutException on timeout.
         /// </summary>
-        BPSThrowsTimeout = 1 << 3
+        BPSThrowsTimeout = 1 << 3,
+        /// <summary>
+        /// Static variables that can be tested at runtime for each supported version. Similar to Android's version tests.
+        /// </summary>
+        StaticVersionChecks = 1 << 4
     }
 
     /// <summary>
@@ -48,6 +52,9 @@ namespace BlackBerry.Internal
 #endif
 #if BLACKBERRY_BPS_EVENT_THROW_TIMEOUT
             | ConfigSettings.BPSThrowsTimeout
+#endif
+#if BLACKBERRY_STATIC_VERSION_TESTS
+            | ConfigSettings.StaticVersionChecks
 #endif
             ;
 
